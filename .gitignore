@@ -1,0 +1,3 @@
+# local backups from edits
+*.pre-*.html
+*.pre-*.md

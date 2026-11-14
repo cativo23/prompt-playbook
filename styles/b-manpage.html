@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prompt Playbook — Man page</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#120d05;--fg:#ffb454;--dim:#9a6b2f;--hi:#ffe2b0}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.65 'IBM Plex Mono',ui-monospace,monospace;padding:32px 16px;
+       background-image:repeating-linear-gradient(0deg,#0000 0 2px,#0003 2px 3px);text-shadow:0 0 6px #ffb45455}
+  main{max-width:820px;margin:auto}
+  .head{display:flex;justify-content:space-between;color:var(--dim)}
+  h2{font-size:15px;font-weight:700;color:var(--hi);margin:26px 0 4px;letter-spacing:.04em}
+  .in{padding-left:7ch}
+  dl{margin:0} dt{float:left;width:7ch;font-weight:700;color:var(--hi)} dd{margin:0 0 4px 8ch}
+  b{color:var(--hi)}
+  .bad::before{content:"Bad:   ";color:var(--dim)} .good::before{content:"Good:  ";color:var(--dim)}
+  pre{margin:0;white-space:pre-wrap}
+  .copy{border-left:2px solid var(--dim);padding:6px 0 6px 14px;margin-top:8px;cursor:pointer}
+  .copy:hover{border-color:var(--hi)}
+  .foot{margin-top:36px;color:var(--dim);display:flex;justify-content:space-between}
+</style>
+</head>
+<body>
+<main>
+  <div class="head"><span>PROMPT(1)</span><span>Agent Manual</span><span>PROMPT(1)</span></div>
+
+  <h2>NAME</h2>
+  <div class="in">prompt — ask an agent for work it can actually finish</div>
+
+  <h2>SYNOPSIS</h2>
+  <div class="in"><b>prompt</b> WHAT [LIMIT] DONE [HOW]</div>
+
+  <h2>DESCRIPTION</h2>
+  <div class="in"><dl>
+    <dt>WHAT</dt><dd>goal and exact location. Without it the agent explores the whole repo.</dd>
+    <dt>LIMIT</dt><dd>what must not be touched. Without it: scope creep.</dd>
+    <dt>DONE</dt><dd>verifiable end condition. Without it the agent never stops.</dd>
+    <dt>HOW</dt><dd>model, agents yes/no, ask or decide.</dd>
+  </dl></div>
+
+  <h2>EXAMPLES</h2>
+  <div class="in">
+    <pre class="bad">"Fix the failing tests"</pre>
+    <pre class="good">"Run `test --filter=Cart`. 3 are red. Fix them one at a
+       time, re-running after each. Done when all 3 pass and
+       nothing else breaks."</pre>
+  </div>
+
+  <h2>FILES</h2>
+  <div class="in">pocket prompt <span style="color:var(--dim)">(click to copy)</span>
+<pre class="copy" onclick="navigator.clipboard.writeText(this.innerText)">Goal: &lt;one sentence&gt;
+Only touch: &lt;file or folder&gt;
+Done when: &lt;test / output / screenshot&gt;
+Then stop and show me &lt;what&gt;.</pre></div>
+
+  <h2>SEE ALSO</h2>
+  <div class="in">agent(1), clear(1), handoff(5)</div>
+
+  <div class="foot"><span>prompt-playbook 1.0</span><span>November 2026</span><span>PROMPT(1)</span></div>
+</main>
+</body>
+</html>

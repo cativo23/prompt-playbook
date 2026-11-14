@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prompt Playbook — TUI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#1a1b26;--panel:#16161e;--fg:#c0caf5;--dim:#565f89;--blue:#7aa2f7;--mag:#bb9af7;--green:#9ece6a;--red:#f7768e;--yel:#e0af68}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.55 'Fira Code',ui-monospace,monospace;padding:24px 16px}
+  .app{max-width:960px;margin:auto;border:2px solid var(--blue);border-radius:4px;background:var(--panel)}
+  .tabs{display:flex;flex-wrap:wrap;border-bottom:2px solid var(--blue)}
+  .tab{padding:6px 14px;color:var(--dim);cursor:pointer;border:none;background:none;font:inherit}
+  .tab.on{background:var(--blue);color:var(--panel);font-weight:600}
+  .grid{display:grid;grid-template-columns:1fr 1.4fr;gap:12px;padding:12px}
+  @media(max-width:700px){.grid{grid-template-columns:1fr}}
+  .p{border:1px solid var(--dim);border-radius:3px;padding:18px 14px 12px;position:relative}
+  .p>.t{position:absolute;top:-10px;left:10px;background:var(--panel);padding:0 6px;color:var(--mag);font-weight:600}
+  .p.wide{grid-column:1/-1}
+  .row{display:flex;gap:10px} .k{color:var(--yel);width:6ch;font-weight:600}
+  .bad{color:var(--red)} .good{color:var(--green)}
+  .meter{display:flex;align-items:center;gap:10px;margin:4px 0}
+  .bar{flex:1;height:12px;background:#24283b;border-radius:2px;overflow:hidden}
+  .bar i{display:block;height:100%}
+  pre{margin:0;white-space:pre-wrap}
+  .foot{border-top:2px solid var(--blue);padding:5px 12px;color:var(--dim);font-size:13px}
+  .foot b{color:var(--blue)}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="tabs">
+    <button class="tab on">1:formula</button><button class="tab">2:agents</button><button class="tab">3:decisions</button><button class="tab">4:cheatsheet</button>
+  </div>
+  <div class="grid">
+    <div class="p"><span class="t">The 4 pieces</span>
+      <div class="row"><span class="k">WHAT</span>goal + exact location</div>
+      <div class="row"><span class="k">LIMIT</span>what not to touch</div>
+      <div class="row"><span class="k">DONE</span>proof it's finished</div>
+      <div class="row"><span class="k">HOW</span>model, agents, ask/decide</div>
+    </div>
+    <div class="p"><span class="t">Before → after</span>
+      <pre class="bad">✗ "Fix the failing tests"</pre><br>
+      <pre class="good">✓ "Run `test --filter=Cart`. 3 are red. Fix them
+  one at a time, re-running after each. Done when
+  all 3 pass and nothing else breaks."</pre>
+    </div>
+    <div class="p wide"><span class="t">Why context size matters</span>
+      <div class="meter"><span style="width:9ch">ctx 400K</span><span class="bar"><i style="width:80%;background:var(--red)"></i></span><span>8× per turn</span></div>
+      <div class="meter"><span style="width:9ch">ctx 200K</span><span class="bar"><i style="width:40%;background:var(--yel)"></i></span><span>4× per turn</span></div>
+      <div class="meter"><span style="width:9ch">ctx  50K</span><span class="bar"><i style="width:10%;background:var(--green)"></i></span><span>1× per turn</span></div>
+    </div>
+  </div>
+  <div class="foot"><b>←→</b> lessons · <b>/</b> search · <b>c</b> copy prompt · <b>q</b> quit</div>
+</div>
+</body>
+</html>

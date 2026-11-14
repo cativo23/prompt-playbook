@@ -1,0 +1,754 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prompt Playbook</title>
+<meta name="description" content="A field guide to prompting coding agents: ask for work they can finish and keep context small. Every fact links to its source.">
+<link rel="icon" type="image/png" href="assets/icon.png">
+<link rel="apple-touch-icon" href="assets/icon.png">
+<!-- Share card: rendered from tools/og.html by tools/make-og.sh. og:image needs an absolute URL. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="nospoon.cativo.dev">
+<meta property="og:url" content="https://nospoon.cativo.dev/">
+<meta property="og:title" content="Prompt Playbook: free your context">
+<meta property="og:description" content="A field guide to prompting coding agents: ask for work they can finish and keep context small. Every fact links to its source.">
+<meta property="og:image" content="https://nospoon.cativo.dev/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Prompt Playbook. Green ASCII banner over Matrix rain: Free your context. A field guide to prompting coding agents. Every fact links to its source.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Prompt Playbook: free your context">
+<meta name="twitter:description" content="A field guide to prompting coding agents: ask for work they can finish and keep context small. Every fact links to its source.">
+<meta name="twitter:image" content="https://nospoon.cativo.dev/assets/og.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#030a05; --bg2:#06120a; --line:#10301a; --line2:#1c4a2a;
+  --g:#39ff7a; --g2:#1f9e4a; --gdim:#3f7a52;
+  --fg:#d9eede; --white:#f4fff7; --dim:#7c9b86;
+  --red:#ff5f7a; --yel:#ffe066; --cyan:#6ee7ff;
+  --mono:'JetBrains Mono',ui-monospace,monospace; --vt:'VT323',monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.7 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+::selection{background:var(--g);color:#000}
+a{color:var(--g)}
+/* scanlines + vignette over everything */
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;
+  background:repeating-linear-gradient(0deg,transparent 0 2px,rgba(0,0,0,.18) 2px 3px),
+             radial-gradient(ellipse at center,transparent 60%,rgba(0,0,0,.55));}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:var(--g);box-shadow:0 0 12px var(--g);z-index:60}
+
+/* ---------- HERO ---------- */
+.hero{position:relative;min-height:100vh;overflow:hidden;display:flex;align-items:flex-end;border-bottom:1px solid var(--line)}
+#rain{position:absolute;inset:0;width:100%;height:100%}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(3,10,5,.15) 0%,rgba(3,10,5,.55) 55%,var(--bg) 96%)}
+.hero-in{position:relative;z-index:2;width:100%;text-align:center;max-width:1100px;margin:auto;padding:0 16px 9vh}
+.banner{font-family:var(--mono);font-size:clamp(7px,1.2vw,15px);line-height:1.15;color:var(--g);margin:0;
+  text-shadow:0 0 8px rgba(57,255,122,.7),0 0 26px rgba(57,255,122,.35);white-space:pre;overflow:hidden;width:fit-content;max-width:100%;margin-left:auto;margin-right:auto}
+.banner.sm{display:none}
+@media(max-width:720px){.banner.lg{display:none}.banner.sm{display:table;font-size:clamp(7px,2.4vw,12px)}}
+.zinehead{font-family:var(--mono);font-size:clamp(8px,1.6vw,13px);color:var(--dim);margin:22px 0 10px;white-space:pre;overflow:hidden;width:fit-content;max-width:100%;margin-left:auto;margin-right:auto}
+h1{font-size:clamp(44px,8.5vw,108px);line-height:.95;margin:6px 0 18px;font-weight:800;letter-spacing:-.04em;color:var(--white)}
+h1 .ctx{white-space:nowrap;font-family:var(--vt);font-weight:400;letter-spacing:0;color:var(--g);text-shadow:0 0 22px rgba(57,255,122,.55)}
+.caret{display:inline-block;width:.45em;height:.8em;background:var(--g);vertical-align:-.05em;margin-left:4px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.lead{max-width:620px;color:#b5cfbc;margin:0 auto 28px;font-size:19px}
+.cta{display:flex;justify-content:center;gap:14px;flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:14px;padding:12px 18px;border:1px solid var(--g);color:var(--g);text-decoration:none;background:rgba(57,255,122,.06);transition:.15s}
+.btn:hover{background:var(--g);color:#000;box-shadow:0 0 24px rgba(57,255,122,.5)}
+.btn.ghost{border-color:var(--line2);color:var(--dim)}
+.btn.ghost:hover{border-color:var(--g);color:#000}
+
+/* ---------- INDEX ---------- */
+main{max-width:1100px;margin:auto;padding:0 16px}
+.index{font-family:var(--mono);font-size:14px;padding:56px 0 24px;border-bottom:1px dashed var(--line2)}
+.index pre{margin:0;color:var(--dim);overflow-x:auto}
+.index a{color:var(--fg);text-decoration:none} .index a:hover{color:#000;background:var(--g)}
+.index .h{color:var(--g)}
+
+/* ---------- CHAPTERS ---------- */
+.chapter{display:grid;grid-template-columns:230px 1fr;gap:48px;padding:88px 0;border-bottom:1px dashed var(--line2)}
+@media(max-width:820px){.chapter{grid-template-columns:1fr;gap:10px;padding:64px 0}}
+.num{position:sticky;top:28px;align-self:start}
+@media(max-width:820px){.num{position:static}}
+.num .hex{font-family:var(--vt);font-size:96px;line-height:.85;color:var(--g);text-shadow:0 0 26px rgba(57,255,122,.35)}
+.num .lab{display:block;font-family:var(--mono);font-size:12px;letter-spacing:.2em;color:var(--dim);margin-top:10px}
+.num .lab::before{content:"[ "} .num .lab::after{content:" ]"}
+h2{margin:0 0 8px;font-size:clamp(28px,3.6vw,40px);letter-spacing:-.025em;line-height:1.1;color:var(--white)}
+.sub{color:var(--dim);margin:0 0 30px;font-size:18px}
+h3{font-family:var(--mono);font-size:14px;letter-spacing:.12em;color:var(--g);margin:38px 0 12px;font-weight:700}
+h3::before{content:"// ";color:var(--gdim)}
+p{margin:0 0 16px} strong{color:var(--white)}
+code{font-family:var(--mono);font-size:.86em;color:var(--cyan);background:rgba(110,231,255,.07);padding:1px 6px;border-radius:3px}
+
+/* ascii table */
+pre.ascii{font-family:var(--mono);font-size:14px;line-height:1.45;margin:0 0 8px;overflow-x:auto;color:var(--fg);padding:4px 0}
+pre.ascii .k{color:var(--yel)} pre.ascii .h{color:var(--g)} pre.ascii .d{color:var(--dim)} pre.ascii .r{color:var(--red)}
+
+/* diff cards */
+.diff{border:1px solid var(--line);background:var(--bg2);margin:0 0 18px}
+.diff .ttl{font-family:var(--mono);font-size:12px;letter-spacing:.15em;color:var(--dim);padding:10px 16px;border-bottom:1px solid var(--line)}
+.diff .row{font-family:var(--mono);font-size:15px;line-height:1.55;padding:14px 16px 14px 46px;position:relative}
+.diff .row::before{position:absolute;left:16px;font-weight:700}
+.diff .minus{color:#ffb3c0;background:rgba(255,95,122,.06)} .diff .minus::before{content:"[-]";color:var(--red)}
+.diff .plus{color:#bdf7cf;background:rgba(57,255,122,.05);border-top:1px solid var(--line)} .diff .plus::before{content:"[+]";color:var(--g)}
+.diff .why{font-size:15px;color:var(--dim);padding:10px 16px;border-top:1px dashed var(--line)}
+.diff .why b{color:var(--yel);font-weight:600}
+
+/* meters */
+.meter{display:grid;grid-template-columns:96px 1fr 92px;gap:14px;align-items:center;font-family:var(--mono);font-size:14px;margin:10px 0}
+.meter .bar{height:14px;background:#0b1f12;border:1px solid var(--line);position:relative;overflow:hidden}
+.meter .bar i{position:absolute;inset:0 auto 0 0;width:0;transition:width 1.4s cubic-bezier(.2,.8,.2,1)}
+.meter .bar i::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 6px,rgba(0,0,0,.35) 6px 8px)}
+.meter .x{text-align:right;color:var(--white)}
+.note{font-size:14px;color:var(--dim);border-left:2px solid var(--line2);padding-left:12px;margin-top:18px}
+
+/* callout */
+.rule{border:1px solid var(--g2);background:linear-gradient(90deg,rgba(57,255,122,.08),transparent);padding:20px 22px;margin:26px 0;position:relative}
+.rule::before{content:"RULE";position:absolute;top:-10px;left:16px;background:var(--bg);padding:0 8px;font-family:var(--mono);font-size:12px;letter-spacing:.2em;color:var(--g)}
+.rule p{margin:0;font-size:19px;color:var(--white)}
+
+/* checklist */
+ol.check{list-style:none;padding:0;margin:0;counter-reset:c}
+ol.check li{counter-increment:c;padding:12px 0 12px 54px;position:relative;border-top:1px solid var(--line)}
+ol.check li::before{content:"0x0" counter(c);position:absolute;left:0;font-family:var(--mono);font-size:13px;color:var(--g);top:15px}
+ol.check li b{color:var(--white)}
+
+/* copy blocks */
+.copy{position:relative;border:1px solid var(--line2);background:var(--bg2);margin:0 0 18px}
+.copy .ttl{font-family:var(--mono);font-size:12px;letter-spacing:.15em;color:var(--g);padding:10px 16px;border-bottom:1px solid var(--line)}
+.copy pre{font-family:var(--mono);font-size:14.5px;line-height:1.6;margin:0;padding:16px;white-space:pre-wrap;color:var(--fg)}
+.copy pre .ph{color:var(--yel)}
+.copy button{position:absolute;top:6px;right:8px;font-family:var(--mono);font-size:12px;background:transparent;border:1px solid var(--line2);color:var(--dim);padding:4px 10px;cursor:pointer}
+.copy button:hover{border-color:var(--g);color:var(--g)}
+.copy button.ok{background:var(--g);color:#000;border-color:var(--g)}
+
+/* two cols */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:700px){.two{grid-template-columns:1fr}}
+.box{border:1px solid var(--line);padding:18px;background:var(--bg2)}
+.box .t{font-family:var(--mono);font-size:13px;letter-spacing:.12em;margin-bottom:8px}
+.box.bad .t{color:var(--red)} .box.good .t{color:var(--g)}
+.box p{font-size:15.5px;margin:0}
+
+/* settings */
+.set{font-family:var(--mono);font-size:14px;border-top:1px solid var(--line);padding:16px 0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:20px}
+@media(max-width:700px){.set{grid-template-columns:1fr;gap:6px}}
+.set .key{color:var(--cyan);word-break:break-all} .set .key span{color:var(--yel)}
+.set .what{font-family:Inter;font-size:15.5px;color:var(--fg)}
+
+/* reveal */
+.rv{opacity:0;transform:translateY(18px);transition:opacity .7s,transform .7s}
+.rv.in{opacity:1;transform:none}
+
+footer{max-width:1100px;margin:auto;padding:64px 16px 80px;font-family:var(--mono);font-size:13px;color:var(--dim)}
+footer pre{margin:0;white-space:pre-wrap}
+footer .g{color:var(--g)}
+
+@media(prefers-reduced-motion:reduce){#rain{display:none}.rv{opacity:1;transform:none}.caret{animation:none}.meter .bar i{transition:none}}
+/* content additions: source links, advice tag, bullet lists */
+a.src{font-family:var(--mono);font-size:.76em;color:var(--gdim);text-decoration:none;border-bottom:1px dotted var(--gdim);white-space:nowrap;margin-left:2px}
+a.src:hover{color:#000;background:var(--g);border-bottom-color:var(--g)}
+pre.ascii a.src{font-size:1em;margin-left:0}
+.adv{font-family:var(--mono);font-size:.82em;font-weight:700;color:var(--yel);letter-spacing:.04em}
+ul.bul{list-style:none;padding:0;margin:0 0 16px}
+ul.bul li{position:relative;padding:11px 0 11px 26px;border-top:1px solid var(--line)}
+ul.bul li::before{content:">";position:absolute;left:4px;top:11px;font-family:var(--mono);color:var(--g)}
+ul.bul li b{color:var(--white)}
+.chapter>div{min-width:0}
+main code{overflow-wrap:anywhere}
+@media(max-width:820px){.chapter{grid-template-columns:minmax(0,1fr)}}
+.set.s2{grid-template-columns:90px minmax(0,1fr)}
+@media(max-width:700px){.set.s2{grid-template-columns:1fr}}
+h2+pre.ascii,h2+.diff{margin-top:24px}
+.diff .row.txt{padding-left:16px;font-family:Inter,system-ui,sans-serif;font-size:15.5px}
+.diff .row.minus,.diff .row.plus{overflow-wrap:anywhere}
+.copy .ttl{padding-right:84px}
+.copy+.note{margin-top:-6px;margin-bottom:22px}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<header class="hero">
+  <canvas id="rain" aria-hidden="true"></canvas>
+  <div class="hero-in">
+<pre class="banner lg" aria-hidden="true">    ____  ____  ____  __  _______  ______ __ ______  __    _____  ______  ____  ____  __ __
+   / __ \/ __ \/ __ \/  |/  / __ \/_  __//_//_/ __ \/ /   /   \ \/ / __ )/ __ \/ __ \/ //_/
+  / /_/ / /_/ / / / / /|_/ / /_/ / / /_/_//_// /_/ / /   / /| |\  / __  / / / / / / / ,&lt;   
+ / ____/ _, _/ /_/ / /  / / ____/ / //_//_/ / ____/ /___/ ___ |/ / /_/ / /_/ / /_/ / /| |  
+/_/   /_/ |_|\____/_/  /_/_/     /_/_//_/  /_/   /_____/_/  |_/_/_____/\____/\____/_/ |_|  
+                                                                                           </pre>
+<pre class="banner sm" aria-hidden="true">    ____  ____  ____  __  _______  ______
+   / __ \/ __ \/ __ \/  |/  / __ \/_  __/
+  / /_/ / /_/ / / / / /|_/ / /_/ / / /   
+ / ____/ _, _/ /_/ / /  / / ____/ / /    
+/_/   /_/ |_|\____/_/  /_/_/     /_/     
+                                         
+    ____  __    _____  ______  ____  ____  __ __
+   / __ \/ /   /   \ \/ / __ )/ __ \/ __ \/ //_/
+  / /_/ / /   / /| |\  / __  / / / / / / / ,&lt;   
+ / ____/ /___/ ___ |/ / /_/ / /_/ / /_/ / /| |  
+/_/   /_____/_/  |_/_/_____/\____/\____/_/ |_|  
+                                                </pre>
+<pre class="zinehead">==========================================================================
+  Volume 0x01 :: Issue 0x01 :: Philes 0x00-0x08 :: a field guide for agents
+==========================================================================</pre>
+    <h1>Free your <span class="ctx"><span id="type"></span><span class="caret"></span></span></h1>
+    <p class="lead">The agent does what you <strong>ask</strong>, not what you <strong>mean</strong>. Vague prompts tend to become big contexts, and big contexts cost usage on every turn. This zine is the fix.</p>
+    <div class="cta"><a class="btn" href="#formula">&gt; follow the white rabbit</a><a class="btn ghost" href="#pocket">jump to pocket prompts</a></div>
+  </div>
+</header>
+
+<main>
+  <nav class="index rv" aria-label="Index">
+<pre><span class="h">-[ INDEX ]--------------------------------------------------------------------</span>
+  0x00  <a href="#why">Why prompts cost tokens .................................. the physics</a>
+  0x01  <a href="#formula">The formula (WHAT / LIMIT / DONE / HOW) .................. four pieces</a>
+  0x02  <a href="#examples">Before / after ............................... fewer correction rounds</a>
+  0x03  <a href="#agents">Prompting agents ................................. delegate on purpose</a>
+  0x04  <a href="#context">Context hygiene ............................ clear, compact on purpose</a>
+  0x05  <a href="#output">Asking for the output you want .................... the shape you want</a>
+  0x06  <a href="#pocket">Pocket prompts ...................................... copy, fill, send</a>
+  0x07  <a href="#settings">Settings that guard you ..................................... set once</a>
+  0x08  <a href="#field">Field notes: one measured week ..................... one measured week</a>
+<span class="h">------------------------------------------------------------------------------</span></pre>
+  </nav>
+  <div class="note rv" style="margin:28px 0 0">
+    <p style="margin:0 0 6px">Facts below carry a source link. Lines marked "Advice" are rules of thumb, not facts.</p>
+    <p style="margin:0 0 6px">0x08 is different: field notes from one developer's measured week, not documentation.</p>
+    <p style="margin:0">Version-gated and plan-dependent defaults were checked 2026-11-14 and may change.</p>
+  </div>
+
+  <!-- 0x00 -->
+  <section class="chapter" id="why">
+    <div class="num rv"><div class="hex">0x00</div><span class="lab">THE PHYSICS</span></div>
+    <div>
+      <div class="rv">
+      <h2>Every turn re-reads everything</h2>
+      <p>The model keeps no memory between requests, so each turn the agent re-sends the full context: system prompt, project context, every prior message and tool result, plus your new message. Caching only avoids reprocessing the unchanged prefix, which is re-read at a cheaper cached rate. The context is still carried and billed on every turn. <a class="src" href="https://code.claude.com/docs/en/prompt-caching">[prompt-caching]</a></p>
+      <p>Cost scales with context size, and tool use multiplies it: every tool call triggers another request that carries the whole history. Even with caching, a one-line question in a session open all day still draws usage for the whole conversation. <a class="src" href="https://code.claude.com/docs/en/costs">[costs]</a></p>
+      </div>
+      <div class="rv">
+      <h3>HOW THE CACHE WORKS</h3>
+<ul class="bul">
+<li>Matching is exact-prefix. A change anywhere in the prefix recomputes everything after it; there is no per-file or per-segment caching. Rarely-changing content (system prompt, tool definitions, project context) comes first and the conversation last, so appending is cheap and altering early content is expensive. <a class="src" href="https://code.claude.com/docs/en/prompt-caching">[prompt-caching]</a></li>
+<li>Cached prefixes expire after inactivity, and each cache hit resets the timer. The first message after a break longer than the cache lifetime reprocesses the full context (slower and costlier). <a class="src" href="https://code.claude.com/docs/en/prompt-caching">[prompt-caching]</a></li>
+<li>The API offers a 5-minute and a 1-hour TTL. The 1-hour one charges a higher rate for cache writes, so it helps when you leave a session idle and come back, and costs more on short bursts that never idle past five minutes. <a class="src" href="https://code.claude.com/docs/en/prompt-caching">[prompt-caching]</a></li>
+<li>Default TTL in Claude Code depends on how you pay. The main conversation gets 1 hour only on a Claude subscription within included plan usage; with usage credits, an API key or a cloud provider it gets 5 minutes. Subagents, workflows, compaction and session titles default to 5 minutes, except a small set of server-controlled helper requests on a subscription. TTL controls need v2.1.242+. Defaults may change, so treat this as true as of 2026-11-14. <a class="src" href="https://code.claude.com/docs/en/prompt-caching">[prompt-caching]</a></li>
+</ul>
+      </div>
+      <div class="rv">
+      <h3>WHERE IT LEAKS</h3>
+      <p>Idle sessions can still consume usage:</p>
+<pre class="ascii">  +------------------------+----------------------------------------+----------------------+
+  | <span class="h">LEAK</span>                   | <span class="h">WHY IT HURTS</span>                           | <span class="h">SOURCE</span>               |
+  +------------------------+----------------------------------------+----------------------+
+  | <span class="k">session-scoped</span>         | fire on their interval while idle and  | <a class="src" href="https://code.claude.com/docs/en/costs">[costs]</a>              |
+  | <span class="k">scheduled tasks</span>        | send the full context each time        |                      |
+  +------------------------+----------------------------------------+----------------------+
+  | <span class="k">messages from other</span>    | delivered as a new turn when the       | <a class="src" href="https://code.claude.com/docs/en/costs">[costs]</a>              |
+  | <span class="k">sessions</span>               | session is idle                        |                      |
+  +------------------------+----------------------------------------+----------------------+
+  | <span class="k">active-goal check-ins</span>  | can start idle turns (at most three    | <a class="src" href="https://code.claude.com/docs/en/costs">[costs]</a>              |
+  |                        | per goal between your prompts)         |                      |
+  +------------------------+----------------------------------------+----------------------+
+  | <span class="k">session recap and idle</span> | can use tokens while you are away;     | <a class="src" href="https://code.claude.com/docs/en/costs">[costs]</a>,             |
+  | <span class="k">compaction</span>             | idle compaction applies to a           | <a class="src" href="https://code.claude.com/docs/en/prompt-caching">[prompt-caching]</a>     |
+  |                        | conversation on the one-hour TTL       |                      |
+  +------------------------+----------------------------------------+----------------------+</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- 0x01 -->
+  <section class="chapter" id="formula">
+    <div class="num rv"><div class="hex">0x01</div><span class="lab">THE FORMULA</span></div>
+    <div>
+      <div class="rv">
+      <h2>Four pieces, one line each</h2>
+      <p>A prompt does not need to be long. <b class="adv">Advice:</b> make it answer four questions.</p>
+<pre class="ascii">  +---------+-----------------------------------------------+
+  | <span class="h">PIECE</span>   | <span class="h">ANSWERS</span>                                       |
+  +---------+-----------------------------------------------+
+  | <span class="k">WHAT</span>    | goal, plus the file or area and the symptom   |
+  | <span class="k">LIMIT</span>   | scope, in either direction                    |
+  | <span class="k">DONE</span>    | a check that returns pass or fail             |
+  | <span class="k">HOW</span>     | preferences, plan mode, reasons               |
+  +---------+-----------------------------------------------+</pre>
+      </div>
+      <div class="rv">
+      <h3>SUPPORT</h3>
+      <div class="set s2"><div class="key">WHAT</div><div class="what">Name the file or area, describe the symptom, and say what "fixed" looks like up front. This gives the agent information it cannot get from the repo and usually saves a round of corrections. <a class="src" href="https://code.claude.com/docs/en/best-practices">[best-practices]</a></div></div>
+      <div class="set s2"><div class="key">LIMIT</div><div class="what">The agent tends to read a request conservatively and build the smallest thing that satisfies it. If you want edge cases, empty and error states or the natural follow-on, say so (the docs use the phrase "be ambitious"). <a class="src" href="https://code.claude.com/docs/en/best-practices">[best-practices]</a> <b class="adv">Advice:</b> you own scope, so state it both ways.</div></div>
+      <div class="set s2"><div class="key">DONE</div><div class="what">Without one, "looks done" is all the agent has to go on, and in practice you become the test suite. Examples of checks: tests, build exit code, linter, fixture diff, screenshot vs mockup. <a class="src" href="https://code.claude.com/docs/en/best-practices">[best-practices]</a></div></div>
+      <div class="set s2"><div class="key">HOW</div><div class="what">If you care which of two reasonable approaches the agent picks, state it, because it can't be read from the code. <a class="src" href="https://code.claude.com/docs/en/best-practices">[best-practices]</a> Explain the reason behind an instruction, not just the rule; context or motivation helps the model deliver more targeted results. <a class="src" href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices">[prompting best practices]</a></div></div>
+      <div class="rule"><p><span class="adv">(advice)</span> End every work prompt with the check that proves it is finished ("Done when ___").</p></div>
+      </div>
+      <div class="rv">
+      <h3>SANITY CHECKS</h3>
+<ul class="bul">
+<li><b>Colleague test:</b> if a colleague with minimal context would be confused by your prompt, the model will be too. Use numbered lists or bullets when the order or completeness of steps matters. <a class="src" href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices">[prompting best practices]</a></li>
+<li><b>Ask for evidence:</b> request the command run and its output, or a screenshot, not just "all tests pass". For a session you weren't watching, it is the only evidence you have. <a class="src" href="https://code.claude.com/docs/en/best-practices">[best-practices]</a></li>
+<li><b>Plan before act:</b> plan mode lets the agent read files and propose a plan with no edits until you approve. Enter it with <code>claude --permission-mode plan</code> or Shift+Tab mid-session. Use it for changes you want to review before they touch disk. <a class="src" href="https://code.claude.com/docs/en/common-workflows">[common-workflows]</a></li>
+<li><b>Course-correct early:</b> watch the first minute and press Esc the moment the agent drifts. Esc stops mid-action and keeps everything up to that point; <code>/rewind</code> (or Esc twice on an empty prompt) opens a menu to roll the code, the conversation, or both back to an earlier prompt. <a class="src" href="https://code.claude.com/docs/en/best-practices">[best-practices]</a></li>
+<li><b>Exploring is different:</b> vague prompts are fine for exploration (e.g. "what would you improve in this file?"). You'll correct a bit more as you go. Spend specificity where you already know what you want. <a class="src" href="https://code.claude.com/docs/en/best-practices">[best-practices]</a></li>
+</ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 0x02 -->
+  <section class="chapter" id="examples">
+    <div class="num rv"><div class="hex">0x02</div><span class="lab">BEFORE / AFTER</span></div>
+    <div>
+      <div class="rv">
+      <h2>Same intent, fewer correction rounds</h2>
+<div class="diff">
+<div class="ttl">PATCH 01 :: NO SYMPTOM, NO LOCATION, NO CHECK</div>
+<div class="row minus">fix the login bug</div>
+<div class="row plus">users report login fails after the session times out. look at token refresh in src/auth/, write a failing test that reproduces it, then fix it</div>
+<div class="why"><b>Added:</b> symptom, location, a reproducing failing test, then the fix. <a class="src" href="https://code.claude.com/docs/en/best-practices">[best-practices]</a></div>
+</div>
+      </div>
+      <div class="rv">
+<div class="diff">
+<div class="ttl">PATCH 02 :: NO PATTERN, NO CONSTRAINT</div>
+<div class="row minus">add a calendar widget</div>
+<div class="row plus">follow the pattern in ExistingWidget.php and build a calendar widget that lets you pick a month and page between years. no new libraries</div>
+<div class="why"><b>Added:</b> an existing pattern to copy and a constraint. (The docs' own example uses a different file name.) <a class="src" href="https://code.claude.com/docs/en/best-practices">[best-practices]</a></div>
+</div>
+      </div>
+      <div class="rv">
+      <div class="diff">
+<div class="ttl">PATCH 03 :: DESCRIBING THE THING INSTEAD OF HANDING IT OVER</div>
+<div class="row txt">Reference a file with <code>@path</code>, paste screenshots of designs or errors, and pipe command output into the prompt. The docs example is <code>cat error.log | claude -p "what's going on here"</code>. <a class="src" href="https://code.claude.com/docs/en/best-practices">[best-practices]</a></div>
+</div>
+      </div>
+      <div class="rv">
+<div class="diff">
+<div class="ttl">PATCH 04 :: ADVICE WHEN YOU WANTED ACTION</div>
+<div class="row minus">can you suggest some changes to the retry logic?</div>
+<div class="row plus">change the retry logic so it backs off after the third failure</div>
+<div class="why">Phrasing like "can you suggest some changes" may get suggestions instead of edits, so say "change this" when you want the change made. <a class="src" href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices">[prompting best practices]</a></div>
+</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 0x03 -->
+  <section class="chapter" id="agents">
+    <div class="num rv"><div class="hex">0x03</div><span class="lab">AGENTS</span></div>
+    <div>
+      <div class="rv">
+      <h2>Start small, delegate on purpose</h2>
+      <h3>SUBAGENT VERSUS TEAM</h3>
+      <p>Start with a subagent, not an agent team. Subagents work inside one session and return a result to the caller. Teammates are separate, fully independent sessions that message each other directly. Subagents cost less because results are summarized back into the main context; teams cost more because each teammate is its own Claude instance. Use subagents for focused workers that report back, and teams when workers need to share findings and challenge each other. <a class="src" href="https://code.claude.com/docs/en/agent-teams">[agent-teams]</a></p>
+      </div>
+      <div class="rv">
+      <h3>COST</h3>
+<ul class="bul">
+<li>Teams cost significantly more than a single session, and usage scales with the number of active teammates and how long each runs. Anthropic's cost guide says agent teams use approximately 7x more tokens than standard sessions when teammates run in plan mode. <a class="src" href="https://code.claude.com/docs/en/costs">[costs]</a> For routine tasks a single session is more cost-effective. <a class="src" href="https://code.claude.com/docs/en/agent-teams">[agent-teams]</a></li>
+<li>Anthropic's multi-agent research system measured agents using about 4x more tokens than chat, and multi-agent systems about 15x more. Token usage by itself explained 80% of the variance on BrowseComp. Reserve multi-agent setups for tasks whose value is high enough to pay for the increased performance. <a class="src" href="https://www.anthropic.com/engineering/multi-agent-research-system">[Anthropic engineering]</a></li>
+<li>Subagent requests still draw on your usage. <a class="src" href="https://code.claude.com/docs/en/costs">[costs]</a></li>
+</ul>
+      </div>
+      <div class="rv">
+      <h3>SUBAGENTS SAVE CONTEXT</h3>
+      <p>Delegate verbose operations (running tests, fetching docs, processing logs) so the noisy output stays in the subagent's context and only a summary returns. Many subagents returning detailed results can still consume significant main-conversation context, and each subagent spends its own tokens. <a class="src" href="https://code.claude.com/docs/en/sub-agents">[sub-agents]</a> <b class="adv">Advice:</b> ask for concise summaries.</p>
+      </div>
+      <div class="rv">
+      <h3>WRITING THE DELEGATION PROMPT</h3>
+<ul class="bul">
+<li>Every delegated worker needs an objective, an output format, guidance on tools and sources, and clear task boundaries. Without detailed task descriptions, Anthropic found agents duplicate work, leave gaps, or fail to find necessary information. <a class="src" href="https://www.anthropic.com/engineering/multi-agent-research-system">[Anthropic engineering]</a></li>
+<li>A teammate loads the same project context as a regular session (CLAUDE.md, MCP servers, skills) plus the spawn prompt, but the lead's conversation history does not carry over. <a class="src" href="https://code.claude.com/docs/en/agent-teams">[agent-teams]</a> Everything in the spawn prompt adds to its context from the start. <a class="src" href="https://code.claude.com/docs/en/costs">[costs]</a> <b class="adv">Advice:</b> include the task-specific details it needs (scope, files, constraints, expected output) and little else.</li>
+<li>Size tasks as self-contained units with a clear deliverable, such as a function, a test file or a review. Too small and coordination overhead exceeds the benefit; too large and teammates work too long without check-ins, so the risk of wasted effort rises. The docs suggest 5-6 tasks per teammate. Give each teammate a distinct set of files, because two teammates editing the same file leads to overwrites. <a class="src" href="https://code.claude.com/docs/en/agent-teams">[agent-teams]</a></li>
+<li>Effort should scale with the task. In Anthropic's research system: simple fact-finding needs 1 agent with 3-10 tool calls, direct comparisons 2-4 subagents with 10-15 calls each, and complex research more than 10 subagents. These are that system's guidance, not a Claude Code rule. <a class="src" href="https://www.anthropic.com/engineering/multi-agent-research-system">[Anthropic engineering]</a></li>
+</ul>
+      </div>
+      <div class="rv">
+      <h3>KEEP TEAMS SMALL AND SUPERVISED</h3>
+<ul class="bul">
+<li>Start with 3-5 teammates for most workflows. Token costs scale linearly with team size, while coordination overhead grows and returns diminish, so three focused teammates often outperform five scattered ones. Scale up only when the work benefits from teammates working simultaneously. <a class="src" href="https://code.claude.com/docs/en/agent-teams">[agent-teams]</a></li>
+<li>Teams start best with research and review tasks that have clear boundaries and don't require writing code, such as reviewing a PR, researching a library or investigating a bug. Monitor and steer instead of leaving a team unattended, because unattended teams raise the risk of wasted effort. If the lead starts implementing instead of waiting, tell it to wait for teammates to finish. <a class="src" href="https://code.claude.com/docs/en/agent-teams">[agent-teams]</a></li>
+<li>Shut teammates down when their work is done; each active teammate keeps consuming tokens until it exits or the session ends. Ask the lead to shut one down by name. The teammate can approve or reject with an explanation and finishes its current request or tool call first, so shutdown can be slow. The team config is removed when the session ends, but the task list directory stays on disk. <a class="src" href="https://code.claude.com/docs/en/costs">[costs]</a>, <a class="src" href="https://code.claude.com/docs/en/agent-teams">[agent-teams]</a></li>
+<li>Agent teams are experimental and disabled by default (<code>CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1</code> enables them). Once enabled, a subagent that Claude names launches as a teammate, so a team can form even when you didn't ask for one. Setting the variable to <code>0</code> makes named subagents launch as plain subagents again. A higher-precedence settings source or managed settings can still enable it. <a class="src" href="https://code.claude.com/docs/en/agent-teams">[agent-teams]</a></li>
+</ul>
+      </div>
+      <div class="rv">
+      <h3>PICK A SMALLER MODEL FOR DELEGATED WORK</h3>
+      <p>Anthropic's cost guidance says to use Sonnet for teammates and to specify <code>model: haiku</code> for simple subagent tasks. Subagents that inherit your session model follow it, so switching the main session to Opus also applies to every inheriting subagent. You can name the model in the spawn prompt (for example "Use Sonnet for each teammate"). <a class="src" href="https://code.claude.com/docs/en/costs">[costs]</a>, <a class="src" href="https://code.claude.com/docs/en/agent-teams">[agent-teams]</a></p>
+      </div>
+      <div class="rv">
+      <h3>WHEN NOT TO USE AGENTS OR TEAMS</h3>
+      <p>For sequential tasks, same-file edits and work with many dependencies, a single session or subagents are more effective. Frequent back-and-forth, iterative refinement, phases that share significant context, quick targeted changes and latency-sensitive work belong in the main conversation. <a class="src" href="https://code.claude.com/docs/en/agent-teams">[agent-teams]</a>, <a class="src" href="https://code.claude.com/docs/en/sub-agents">[sub-agents]</a> Anthropic's research post also notes that domains where all agents must share the same context, or with many dependencies between agents, are a poor fit for multi-agent systems today, and that most coding tasks involve fewer truly parallelizable tasks than research. <a class="src" href="https://www.anthropic.com/engineering/multi-agent-research-system">[Anthropic engineering]</a></p>
+      </div>
+      <div class="rv">
+      <h3>PRE-FLIGHT CHECKLIST (ADVICE)</h3>
+      <ol class="check">
+        <li><b>Does the deliverable fit in one sentence?</b> If you need "and also...", it is probably two jobs.</li>
+        <li><b>Did you say what to read and what the output should look like?</b></li>
+        <li><b>Is there a finish line the agent can check?</b></li>
+        <li><b>Do you even need an agent?</b> A single session is the default for routine work.</li>
+      </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- 0x04 -->
+  <section class="chapter" id="context">
+    <div class="num rv"><div class="hex">0x04</div><span class="lab">CONTEXT HYGIENE</span></div>
+    <div>
+      <div class="rv">
+      <h2>Clear between tasks, compact on purpose</h2>
+<pre class="ascii">  +------------+----------------------------+------------------------------------------+
+  | <span class="h">COMMAND</span>    | <span class="h">WHAT IT DOES</span>               | <span class="h">COST</span>                                     |
+  +------------+----------------------------+------------------------------------------+
+  | <span class="k">/clear</span>     | fresh context for an       | costs nothing itself <a class="src" href="https://code.claude.com/docs/en/costs">[costs]</a>             |
+  |            | unrelated task             |                                          |
+  +------------+----------------------------+------------------------------------------+
+  | <span class="k">/compact</span>   | summarizes the history     | sends a separate summarization request   |
+  |            |                            | that includes the history being          |
+  |            |                            | summarized <a class="src" href="https://code.claude.com/docs/en/prompt-caching">[prompt-caching]</a>              |
+  +------------+----------------------------+------------------------------------------+
+  | <span class="k">/rewind</span>    | truncates back to an       | back to a prefix that is already cached, |
+  |            | earlier turn               | rather than building a new one           |
+  |            |                            | <a class="src" href="https://code.claude.com/docs/en/prompt-caching">[prompt-caching]</a>                         |
+  +------------+----------------------------+------------------------------------------+</pre>
+      </div>
+      <div class="rv">
+<ul class="bul">
+<li>Clear between unrelated tasks: stale context costs tokens on every later message. Run <code>/rename</code> first so you can find the session and <code>/resume</code> it later. <a class="src" href="https://code.claude.com/docs/en/costs">[costs]</a></li>
+<li>Compact has a price tag: while the cache is warm the request mostly reads the cached prefix (cheap). After an idle gap beyond the TTL it reprocesses the whole history uncached, so compacting an old resumed session is the most expensive case. The turn after compaction rebuilds the cache for only the much shorter history. <a class="src" href="https://code.claude.com/docs/en/prompt-caching">[prompt-caching]</a></li>
+<li>Compact at natural breaks (between tasks) rather than letting auto-compaction trigger mid-task. If you went down a path you want to abandon entirely, <code>/rewind</code> to an earlier turn instead. <a class="src" href="https://code.claude.com/docs/en/prompt-caching">[prompt-caching]</a></li>
+<li>Steer what survives: run <code>/compact</code> with instructions (e.g. <code>/compact focus on the auth bug fix</code>), or add a "Compact instructions" section to the project's CLAUDE.md. <a class="src" href="https://code.claude.com/docs/en/context-window.md">[context-window]</a>, <a class="src" href="https://code.claude.com/docs/en/costs">[costs]</a></li>
+<li>Know what is re-injected: after compaction the project-root CLAUDE.md, unscoped rules and auto memory are re-injected from disk. Rules with <code>paths:</code> frontmatter and nested CLAUDE.md files are summarized away with the conversation and only reload on demand. Put must-survive rules in the root CLAUDE.md (or drop the <code>paths:</code> frontmatter). <a class="src" href="https://code.claude.com/docs/en/context-window.md">[context-window]</a></li>
+</ul>
+      </div>
+      <div class="rv">
+      <h3>DON'T BREAK THE CACHE MID-TASK</h3>
+      <p>Avoid mid-task changes that invalidate the cache: switching models (each model has its own cache), turning fast mode on or off, connecting or deliberately removing an MCP server (when tool search does not defer its tools), denying a whole tool when tool search is off, accumulating many images, and upgrading the tool. With tool search active (the default on supported models), the MCP and deny-rule cases do not disturb the cache. Pick model and effort at the start of a session. Editing CLAUDE.md mid-session does not invalidate the cache, but it also does not apply until <code>/clear</code>, <code>/compact</code> or a restart. <a class="src" href="https://code.claude.com/docs/en/prompt-caching">[prompt-caching]</a></p>
+      </div>
+      <div class="rv">
+      <h3>KEEP CONTEXT SMALL AT THE SOURCE</h3>
+<ul class="bul">
+<li>Delegate verbose operations (tests, docs fetching, log processing) to subagents so only a summary returns.</li>
+<li>Use hooks to preprocess noisy output (e.g. trim test output to the last 100 lines).</li>
+<li>Prefer CLI tools (<code>gh</code>, <code>aws</code>, <code>gcloud</code>) over MCP servers where available.</li>
+<li>Disable unused MCP servers via <code>/mcp</code>.</li>
+<li>Aim to keep CLAUDE.md under 200 lines and move workflow-specific instructions into on-demand skills.</li>
+</ul>
+      <p class="note">All five: <a class="src" href="https://code.claude.com/docs/en/costs">[costs]</a>. The 200-line figure is the docs' "aim to" guidance.</p>
+      </div>
+      <div class="rv">
+      <h3>INSPECT BEFORE YOU GUESS</h3>
+<ul class="bul">
+<li><code>/context</code> shows a live breakdown of context by category with optimization suggestions, including which CLAUDE.md and auto memory files loaded. <a class="src" href="https://code.claude.com/docs/en/context-window.md">[context-window]</a></li>
+<li><code>/usage</code> shows session token totals. On Pro, Max, Ultra, Team and Enterprise plans it also attributes recent usage to skills, subagents, plugins and MCP servers with recommendations. After the first response it adds a "Prompt cache (main)" line with the cache-hit share, misses, and whether the cache is warm or cold (v2.1.251+); it can name the likely cause of the last miss (v2.1.260+). <a class="src" href="https://code.claude.com/docs/en/costs">[costs]</a></li>
+</ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 0x05 -->
+  <section class="chapter" id="output">
+    <div class="num rv"><div class="hex">0x05</div><span class="lab">OUTPUT</span></div>
+    <div>
+      <div class="rv">
+      <h2>Ask for the shape you want</h2>
+      <p>Be specific about the output you want: state the format and constraints explicitly. If you want more than the bare task, ask for it explicitly instead of relying on the model to infer it from a vague prompt. <a class="src" href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices">[prompting best practices]</a></p>
+      </div>
+      <div class="rv">
+      <h3>FORMAT</h3>
+<ul class="bul">
+<li>Say what you want, not what you don't: use "Your response should be composed of smoothly flowing prose paragraphs" instead of "Do not use markdown in your response". <a class="src" href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices">[prompting best practices]</a></li>
+<li>Your prompt's style can influence the answer's style: if formatting still won't steer, try matching the prompt's style to the output you want; removing markdown from your prompt can reduce the volume of markdown in the output. <a class="src" href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices">[prompting best practices]</a></li>
+<li>Use XML tags to separate instructions, context and input: they help Claude parse complex prompts unambiguously, especially when a prompt mixes instructions, context, examples and variable inputs. Wrap each type in its own tag (for example <code>&lt;instructions&gt;</code>, <code>&lt;context&gt;</code>, <code>&lt;input&gt;</code>). <a class="src" href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices">[prompting best practices]</a></li>
+<li>Skip preambles with a direct instruction: <code>Respond directly without preamble. Do not start with phrases like "Here is...", "Based on...", etc.</code> The docs list alternatives (output within XML tags, structured outputs, or tool calling) and say to strip the occasional preamble in post-processing. <a class="src" href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices">[prompting best practices]</a></li>
+</ul>
+      </div>
+      <div class="rv">
+      <h3>LENGTH (THE DOCS' SAMPLES ARE FOR CLAUDE OPUS 5)</h3>
+<ul class="bul">
+<li>Ask for length; don't lower effort to get it: effort controls how much the model thinks rather than how much it says. Lowering effort can reduce thinking without reliably shortening the visible response. Official sample: <em>"Keep responses focused, brief, and concise. Keep disclaimers and caveats short, and spend most of the response on the main answer. When asked to explain something, give a high-level summary unless an in-depth explanation is specifically requested."</em> In a long system prompt, pair it with a short reminder near the end. <a class="src" href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-opus-5">[Opus 5 guide]</a></li>
+<li>Calibrate written deliverables separately: files written to disk are often longer than on prior models. Sample: <em>"Match the length of written documents to what the task needs: cover the substance, but do not pad with filler sections, redundant summaries, or boilerplate."</em> <a class="src" href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-opus-5">[Opus 5 guide]</a></li>
+<li>Shape the end-of-task report: sample: <em>"When you finish, lead with the outcome: your first sentence should answer 'what happened' or 'what did you find,' with supporting detail after it for readers who want it."</em> Positive examples of the communication style you want tend to be more effective than instructions about what not to do. <a class="src" href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-opus-5">[Opus 5 guide]</a></li>
+</ul>
+      </div>
+      <div class="rv">
+      <h3>QUESTIONS AND DECISIONS</h3>
+<ul class="bul">
+<li>Limit clarifying questions by saying when one is allowed: scope-control sample for Opus 5: <em>"Deliver what was asked, at the scope intended. Make routine judgment calls yourself, and check in only when different readings of the request would lead to materially different work. If the request seems mistaken or a better approach exists, say so in a sentence and continue with the task as asked rather than quietly narrowing, widening, or transforming it."</em> <a class="src" href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-opus-5">[Opus 5 guide]</a></li>
+<li>Invite questions on purpose: if you haven't pinned down what you want, ask Claude to interview you until it could write the spec, and save it to a file. Claude comes back with multiple-choice questions about the parts you haven't pinned down. Then build from the spec in a fresh session so the build begins with clean context and a written definition of done. <a class="src" href="https://code.claude.com/docs/en/best-practices">[best-practices]</a></li>
+<li>Advice without edits: Claude's latest models follow instructions precisely, so "can you suggest some changes" may get suggestions rather than edits. For a conservative mode the docs show a system-prompt snippet saying not to change files unless clearly instructed, and that when intent is ambiguous the model should default to providing information, doing research and providing recommendations rather than taking action. Ask for action explicitly when you want edits. <a class="src" href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices">[prompting best practices]</a></li>
+<li>Be careful limiting review output: the Opus 5 guide says that if a review prompt says "only report high-severity issues" or "be conservative", the model might follow that literally and report less. Ask it to report everything and filter in a separate pass. <a class="src" href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-opus-5">[Opus 5 guide]</a></li>
+</ul>
+      </div>
+      <div class="rv">
+      <h3>MACHINE-READABLE OUTPUT (API)</h3>
+<ul class="bul">
+<li>Structured outputs constrain the response to a JSON schema via <code>output_config.format</code> with type <code>json_schema</code> (constrained decoding). The docs list "Always valid: No JSON parsing errors" and "Type safe: Guaranteed field types and required fields". Caveats: refusals (<code>stop_reason</code> "refusal") and <code>max_tokens</code> cut-offs can yield output that doesn't match the schema, and enum values may differ in capitalization, so compare them case-insensitively. For classification, use an enum field with your valid labels (via tools or structured outputs). <a class="src" href="https://platform.claude.com/docs/en/build-with-claude/structured-outputs">[structured outputs]</a></li>
+<li>Unsupported: recursive schemas, numerical constraints (minimum/maximum), string length constraints, and <code>additionalProperties</code> other than false (all objects must set it to false). The first request with a new schema has extra latency while the grammar compiles; compiled grammars are cached for 24 hours from last use. <a class="src" href="https://platform.claude.com/docs/en/build-with-claude/structured-outputs">[structured outputs]</a></li>
+<li>If you can't use structured outputs, try prompting alone first: newer models can reliably match complex schemas when told to, especially if implemented with retries. Prefilling the assistant turn is no longer supported on Claude 4.6 and later models (requests return a 400 error), so format-forcing by prefill needs a different approach. <a class="src" href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices">[prompting best practices]</a></li>
+</ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 0x06 -->
+  <section class="chapter" id="pocket">
+    <div class="num rv"><div class="hex">0x06</div><span class="lab">POCKET PROMPTS</span></div>
+    <div>
+      <div class="rv">
+      <h2>Copy, fill, send</h2>
+      <p>Replace what is in <span style="color:var(--yel);font-family:var(--mono)">&lt;angle brackets&gt;</span>. Nothing else changes.</p>
+      <div class="copy"><div class="ttl">0x06.1 :: SCOPED TASK (Advice: the WHAT / LIMIT / DONE shape from 0x01)</div><button>copy</button><pre>Goal: <span class="ph">&lt;one sentence, with the file or area and the symptom&gt;</span>
+Only touch: <span class="ph">&lt;file or folder&gt;</span>
+Done when: <span class="ph">&lt;a check that returns pass or fail: test / build / linter&gt;</span>
+Show me: the command you ran and its output.</pre></div>
+      <p class="note">Why: name the area and symptom, say what fixed looks like, and ask for evidence. <a class="src" href="https://code.claude.com/docs/en/best-practices">[best-practices]</a></p>
+      <div class="copy"><div class="ttl">0x06.2 :: VERIFICATION LOOP</div><button>copy</button><pre>After the change, run <span class="ph">&lt;the auth tests&gt;</span> and keep going until they pass.</pre></div>
+      <p class="note">Works for any task with no setup. <a class="src" href="https://code.claude.com/docs/en/best-practices">[best-practices]</a></p>
+      <div class="copy"><div class="ttl">0x06.3 :: SELF-CHECK (append to anything)</div><button>copy</button><pre>Before you finish, verify your answer against <span class="ph">&lt;test criteria&gt;</span>.</pre></div>
+      <p class="note">The docs say this catches errors reliably, especially for coding and math. Caveat: Claude Opus 5 verifies its own work well without instruction, and carried-over verification instructions can cause over-verification there (extra tokens and latency); the docs say to remove them on that model. <a class="src" href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices">[prompting best practices]</a></p>
+      </div>
+      <div class="rv">
+      <div class="copy"><div class="ttl">0x06.4 :: PLAN BEFORE ACTING</div><button>copy</button><pre>Goal: <span class="ph">&lt;one sentence&gt;</span>
+Read the relevant files and propose a plan. Don't edit anything until I approve.</pre></div>
+      <p class="note">Or start in plan mode: <code>claude --permission-mode plan</code>. <a class="src" href="https://code.claude.com/docs/en/common-workflows">[common-workflows]</a></p>
+      <div class="copy"><div class="ttl">0x06.5 :: NO GOLD-PLATING (prepend to anything)</div><button>copy</button><pre>Only make changes that are directly requested. Don't add features, refactors or
+"improvements" beyond what was asked. Don't add docstrings, comments or type
+annotations to code you didn't change. Don't add error handling, fallbacks or
+validation for scenarios that can't happen. Don't create helpers or abstractions
+for one-time operations. Don't add extra configurability.</pre></div>
+      <p class="note">Adapted from the docs' sample prompt. The docs note Claude Opus 4.5 and 4.6 tend to overengineer, so this is most useful if you see that behavior. <a class="src" href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices">[prompting best practices]</a></p>
+      <div class="copy"><div class="ttl">0x06.6 :: BE AMBITIOUS (the opposite direction)</div><button>copy</button><pre>Be ambitious: <span class="ph">&lt;empty and error states, the save flow wired up, keyboard navigation&gt;</span>.</pre></div>
+      <p class="note">The agent tends to build the smallest thing that satisfies a request, so ask for more explicitly. <a class="src" href="https://code.claude.com/docs/en/best-practices">[best-practices]</a></p>
+      </div>
+      <div class="rv">
+      <div class="copy"><div class="ttl">0x06.7 :: INTERVIEW, THEN SPEC</div><button>copy</button><pre>Interview me until you could write the spec, then write it to SPEC.md.</pre></div>
+      <p class="note">Then build from SPEC.md in a fresh session. <a class="src" href="https://code.claude.com/docs/en/best-practices">[best-practices]</a></p>
+      <div class="copy"><div class="ttl">0x06.8 :: SPAWN PROMPT (Advice: shape from the docs' delegation guidance in 0x03)</div><button>copy</button><pre>Objective: <span class="ph">&lt;one deliverable, e.g. review &lt;path&gt; for &lt;concern&gt;&gt;</span>
+Scope: only <span class="ph">&lt;files&gt;</span>; do not edit <span class="ph">&lt;files&gt;</span>.
+Tools/sources: <span class="ph">&lt;what to use or read&gt;</span>.
+Output: <span class="ph">&lt;format&gt;</span>, concise summary only.
+Model: <span class="ph">&lt;Sonnet&gt;</span>.</pre></div>
+      <p class="note">Why: objective, output format, tool guidance and boundaries. <a class="src" href="https://www.anthropic.com/engineering/multi-agent-research-system">[Anthropic engineering]</a></p>
+      <div class="copy"><div class="ttl">0x06.9 :: UNATTENDED RUN</div><button>copy</button><pre>Success looks like: <span class="ph">&lt;what must be true&gt;</span>.
+When done, <span class="ph">&lt;write the results to ... / post ...&gt;</span>. You cannot ask me questions.</pre></div>
+      <p class="note">Unattended or scheduled runs can't ask clarifying questions, so state success and what to do with the results. <a class="src" href="https://code.claude.com/docs/en/common-workflows">[common-workflows]</a></p>
+      </div>
+      <div class="rv">
+      <div class="copy"><div class="ttl">0x06.10 :: LEAD WITH THE OUTCOME</div><button>copy</button><pre>When you finish, lead with the outcome: your first sentence should answer
+"what happened" or "what did you find," with supporting detail after it.</pre></div>
+      <p class="note">Official Opus 5 sample. <a class="src" href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-opus-5">[Opus 5 guide]</a></p>
+      </div>
+      <div class="rv">
+      <h3>WHEN STUCK</h3>
+      <p>After two failed corrections on the same issue, run <code>/clear</code> and write one new prompt that folds in what you learned, rather than a third correction. The docs say this works better almost every time; a third correction mostly adds to a conversation that already contains two failed attempts for the agent to keep re-reading. <a class="src" href="https://code.claude.com/docs/en/best-practices">[best-practices]</a></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 0x07 -->
+  <section class="chapter" id="settings">
+    <div class="num rv"><div class="hex">0x07</div><span class="lab">SETTINGS</span></div>
+    <div>
+      <div class="rv">
+      <h2>Guards you set once</h2>
+      <p>Checked against Anthropic's docs, 2026-11-14. Version gates are noted; names and defaults may change.</p>
+      <h3>AUTO-COMPACT WINDOW</h3>
+<ul class="bul">
+<li>Set per model with <code>/autocompact</code> (e.g. <code>/autocompact 500k</code>, saved under <code>modelSettings</code>; <code>/autocompact auto</code> restores the tuned default; per-model saving needs v2.1.288+).</li>
+<li>For all models, use the <code>autoCompactWindow</code> setting (e.g. <code>200000</code> in <code>~/.claude/settings.json</code>), <code>--autocompact</code> for one launch, or the <code>CLAUDE_CODE_AUTO_COMPACT_WINDOW</code> environment variable, which takes precedence unless Claude Code ignores the value.</li>
+<li>The command and flag accept 100K to 1M tokens, and the window is capped at the model's context window.</li>
+<li>Caution: an unsuffixed env var value is a raw token count (<code>200</code> means 200 tokens), while <code>/autocompact 200</code> means 200,000. Out-of-range env values trigger a warning and are clamped; a k/M suffix in the env var needs v2.1.304+.</li>
+</ul>
+      <p class="note">Source: <a class="src" href="https://code.claude.com/docs/en/model-config.md">[model-config]</a></p>
+      <p>On models with a native 1M context window (Fable models, Sonnet 5 and later, Haiku 5.5, Opus 4.7 and later), auto-compaction happens at about 967K tokens by default. <a class="src" href="https://code.claude.com/docs/en/model-config.md">[model-config]</a> <b class="adv">Advice:</b> since every request carries the context, a smaller window keeps each request smaller. That is this guide's reasoning, not a quoted claim.</p>
+      </div>
+      <div class="rv">
+      <h3>CACHE TTL</h3>
+<ul class="bul">
+<li><code>promptCacheTtl</code> (or <code>CLAUDE_CODE_PROMPT_CACHE_TTL</code>) for the main conversation and <code>subagentPromptCacheTtl</code> (or <code>CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL</code>) for everything else, each <code>"5m"</code> or <code>"1h"</code> (v2.1.242+).</li>
+<li>API-key and cloud-provider users can set <code>promptCacheTtl</code> to <code>"1h"</code> for a one-hour main-conversation cache.</li>
+<li><code>FORCE_PROMPT_CACHING_5M=1</code> forces 5 minutes for both buckets and is meant for debugging or overriding managed settings.</li>
+<li><code>ENABLE_PROMPT_CACHING_1H=1</code> requests 1 hour for both buckets.</li>
+</ul>
+      <p class="note">Source: <a class="src" href="https://code.claude.com/docs/en/prompt-caching">[prompt-caching]</a></p>
+      </div>
+      <div class="rv">
+      <h3>CUT IDLE AND BACKGROUND USE</h3>
+<ul class="bul">
+<li><code>idleCompaction: false</code> stops compacting a conversation you left idle (v2.1.290+).</li>
+<li><code>crossSessionInbound: "hold"</code> holds inbound messages from other sessions instead of delivering them.</li>
+<li><code>CLAUDE_CODE_GOAL_CHECKIN_MINUTES=0</code> turns off idle goal check-ins.</li>
+<li>Prompt suggestions can be turned off.</li>
+</ul>
+      <p class="note">Source: <a class="src" href="https://code.claude.com/docs/en/costs">[costs]</a></p>
+      </div>
+      <div class="rv">
+      <h3>SUBAGENT MODEL</h3>
+      <p><code>CLAUDE_CODE_SUBAGENT_MODEL</code> sets a default model for subagents, but it is third in precedence: the per-invocation <code>model</code> parameter wins, then the subagent definition's <code>model</code> field, then this variable, then the main conversation's model. To apply one model to every subagent, teammate and workflow agent, set it together with <code>CLAUDE_CODE_SUBAGENT_MODEL_FORCE=1</code> (v2.1.257+); with FORCE, the spawn-prompt and definition models no longer apply. Setting the variable alone does not change the built-in Explore or Plan subagents. For teammates, a model named in the spawn prompt takes precedence over the variable unless FORCE is set. <a class="src" href="https://code.claude.com/docs/en/sub-agents">[sub-agents]</a>, <a class="src" href="https://code.claude.com/docs/en/agent-teams">[agent-teams]</a></p>
+      <h3>THINKING EFFORT</h3>
+      <p>Lower thinking cost for simple tasks with <code>/effort</code> (or in <code>/model</code>), since thinking tokens bill as output tokens. You can't turn thinking off on Opus 5.5, Sonnet 5.5, Haiku 5.5 or the Fable models. Changing effort mid-session keeps the cache on Fable 5.1 and later, Opus 5.5, Sonnet 5.5 and Haiku 5.5 with an API key or Claude subscription; on most other models (and on Bedrock, Google Cloud's Agent Platform or a Claude apps gateway) it invalidates the cache. <a class="src" href="https://code.claude.com/docs/en/costs">[costs]</a>, <a class="src" href="https://code.claude.com/docs/en/prompt-caching">[prompt-caching]</a></p>
+      <h3>INSPECT</h3>
+      <p><code>/usage</code> and <code>/context</code>: see 0x04. In <code>/usage</code>, press <code>d</code> or <code>w</code> to switch between the last 24 hours and the last 7 days. <a class="src" href="https://code.claude.com/docs/en/costs">[costs]</a>, <a class="src" href="https://code.claude.com/docs/en/context-window.md">[context-window]</a></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 0x08 -->
+  <section class="chapter" id="field">
+    <div class="num rv"><div class="hex">0x08</div><span class="lab">FIELD NOTES</span></div>
+    <div>
+      <div class="rv">
+      <h2>One measured week</h2>
+      <p class="note" style="margin-top:0;margin-bottom:24px">This section is a case study: one developer's week, measured from local Claude Code session logs (<code>~/.claude/projects/*.jsonl</code>) and <code>/usage</code>, then anonymized. The ratios describe that week; yours will differ. Read it next to the sourced sections above.</p>
+      <h3>WHAT HAPPENED</h3>
+      <p>A weekly plan limit hit 82% two days after it reset. Model choice and thinking effort barely registered: output tokens, which include thinking, were about 16M against roughly 3,700M of cache reads. Context size drove the bill:</p>
+<ul class="bul">
+<li>One session stayed open for 9 days without <code>/clear</code>.</li>
+<li>Its context averaged 290K to 525K tokens per turn, with a peak of 911K. Every turn, including "ok, continue", re-read all of it.</li>
+<li>Agents it spawned (mostly teammates) accounted for about 64% of the usage. Several ran 400+ turns, and one ran 1,209 turns on the biggest model.</li>
+<li>Between the reset and day three, the lead session started ~670 turns from incoming messages. Only ~200 were the human's. 225 were teammate idle notifications, 127 were teammate messages and 121 were background-task notifications, each a full-context turn.</li>
+<li><code>/usage</code> for the week agreed: 89% of usage was in sessions active across 8+ separate hours, 75% fell under its "start fresh when you switch tasks" recommendation, and one scheduled reminder cost 520K tokens in a single run because it fired inside a huge session.</li>
+</ul>
+      </div>
+      <div class="rv">
+      <h3>RULES WE ADOPTED (ADVICE)</h3>
+<ul class="bul">
+<li>Hand off and <code>/clear</code> before a session passes ~300 to 500K tokens, or the moment the topic changes.</li>
+<li>One agent per deliverable: "fix all 13 review findings" became one agent for the blocker, one for the majors, and the minors done inline.</li>
+<li>Under ~10 steps, skip the agent and do it in the main session.</li>
+<li>Give every agent a finish line and a turn budget (~100 turns), then stop and summarize.</li>
+<li>Turn agent teams off unless the agents need to talk to each other. Subagents return one result and exit.</li>
+<li>Schedule reminders from a fresh, small session.</li>
+</ul>
+      <p>Why ~300 to 500K: cost per turn grows roughly with context. If a session starts near 100K and grows linearly to the handoff point, the average turn is about halfway there:</p>
+<pre class="ascii">  +------------+------------------------+----------------+
+  | <span class="h">HANDOFF AT</span> | <span class="h">AVG CONTEXT/TURN</span>       | <span class="h">RELATIVE COST</span>  |
+  +------------+------------------------+----------------+
+  | <span class="k">300K</span>       | ~200K                  | 1.0x           |
+  | <span class="k">500K</span>       | ~300K                  | 1.5x           |
+  | <span class="k">no limit</span>   | 290-525K, 9 days       | 2-2.5x         |
+  +------------+------------------------+----------------+</pre>
+      </div>
+      <div class="rv">
+      <h3>HANDOFF PROMPT (ADVICE)</h3>
+      <div class="copy"><div class="ttl">HANDOFF :: BEFORE YOU CLEAR</div><button>copy</button><pre>Before I clear this session, write a handoff to <span class="ph">&lt;HANDOFF.md&gt;</span> (max ~150 lines).
+Do it yourself, no agents. Use only what you already know, plus git to confirm state.
+1. Goal in 3 lines.
+2. Status table: item / branch / PR / tests.
+3. Decisions not to reopen, one line each with the why.
+4. Next steps in priority order, each with its first concrete action.
+5. Known traps. Mark anything you can't confirm as "unverified".</pre></div>
+      <p>Then <code>/clear</code> and: "Read HANDOFF.md and let's continue with item #1."</p>
+      </div>
+      <div class="rv">
+      <h3>AGENT BUDGET PROMPT (ADVICE)</h3>
+      <div class="copy"><div class="ttl">AGENT BUDGET :: FOR THE SESSION</div><button>copy</button><pre>For the rest of this session:
+- Spawn an agent only if work truly runs in parallel; otherwise do it yourself.
+- Each agent gets one deliverable, never "the whole spec".
+- Agents report back within ~100 turns; if not done, stop and summarize.
+- Mid-size model unless I explicitly ask for the big one. Max 2 at once.
+- Warn me when this session passes ~<span class="ph">&lt;400K&gt;</span> context so we hand off.</pre></div>
+      </div>
+      <div class="rv">
+      <h3>DIAGNOSE-FIRST PROMPT (ADVICE)</h3>
+      <div class="copy"><div class="ttl">DIAGNOSE FIRST</div><button>copy</button><pre>This fails with: <span class="ph">&lt;paste the exact error&gt;</span>
+Find the cause before editing anything. Show me the cause and the evidence,
+then wait. Don't touch code until I confirm.</pre></div>
+      </div>
+      <div class="rv">
+      <h3>ASKING FOR A DECISION (ADVICE)</h3>
+      <div class="copy"><div class="ttl">SHAPED QUESTION</div><button>copy</button><pre>Max 3 options, one line each with the trade-off. Recommend one.
+Ask me at most one question. If it's routine, decide and tell me in one line.</pre></div>
+      </div>
+      <div class="rv">
+      <h3>SETTINGS GOTCHA WE HIT</h3>
+      <p><code>autoCompactWindow</code> was set globally, but sessions still compacted at 800K. Per-model entries under <code>modelSettings</code> had their own <code>autoCompactWindow</code>, and the setting's own schema description says a per-model value replaces the top-level one for that model. <code>/autocompact</code> writes per-model entries, so running it can silently re-create the override. Check <code>modelSettings</code> if the global value seems ignored.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+<pre><span class="g">-[ EOF ]-------------------------------------------------------------</span>
+  greetz to everyone who ever ran out of context at 3am.
+  there is no spoon. there is only context.
+<span class="g">---------------------------------------------------------------------</span>
+  prompt-playbook :: v0x01 :: facts checked 2026-11-14</pre>
+</footer>
+
+<script>
+// matrix rain
+(() => {
+  const c = document.getElementById('rain'); if (!c) return;
+  const x = c.getContext('2d');
+  const chars = 'ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉ0123456789<>/{}=+';
+  const fs = 17; let cols, drops;
+  function size(){ const r = c.getBoundingClientRect(); c.width = r.width; c.height = r.height;
+    cols = Math.floor(c.width/fs); drops = Array.from({length:cols}, () => Math.random()*-60); }
+  size(); addEventListener('resize', size);
+  setInterval(() => {
+    x.fillStyle = 'rgba(3,10,5,.09)'; x.fillRect(0,0,c.width,c.height);
+    x.font = fs + 'px monospace';
+    for (let i = 0; i < cols; i++) {
+      x.fillStyle = Math.random() > .975 ? '#f4fff7' : (Math.random() > .5 ? '#39ff7a' : '#1f9e4a');
+      x.fillText(chars[Math.floor(Math.random()*chars.length)], i*fs, drops[i]*fs);
+      if (drops[i]*fs > c.height && Math.random() > .975) drops[i] = 0;
+      drops[i]++;
+    }
+  }, 50);
+})();
+
+// typewriter, cycling words
+(() => {
+  const el = document.getElementById('type');
+  const words = ['context.', 'weekly limit.', 'agents.', 'context.'];
+  let w = 0, i = 0, del = false;
+  (function tick(){
+    const word = words[w];
+    el.textContent = word.slice(0, i);
+    if (!del && i < word.length) { i++; return setTimeout(tick, 90); }
+    if (!del && w === words.length - 1) return;
+    if (!del) { del = true; return setTimeout(tick, 1400); }
+    if (del && i > 0) { i--; return setTimeout(tick, 45); }
+    del = false; w++; setTimeout(tick, 250);
+  })();
+})();
+
+// reveal on scroll + meters
+(() => {
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (!e.isIntersecting) return;
+    e.target.classList.add('in');
+    e.target.querySelectorAll('.meter .bar i').forEach(b => b.style.width = b.dataset.w + '%');
+    io.unobserve(e.target);
+  }), {threshold: .12});
+  document.querySelectorAll('.rv').forEach(el => io.observe(el));
+})();
+
+// reading progress
+addEventListener('scroll', () => {
+  const h = document.documentElement;
+  document.getElementById('progress').style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + '%';
+}, {passive: true});
+
+// copy buttons
+document.querySelectorAll('.copy button').forEach(b => b.addEventListener('click', () => {
+  const t = b.parentNode.querySelector('pre').innerText;
+  navigator.clipboard.writeText(t).then(() => {
+    b.textContent = 'copied'; b.classList.add('ok');
+    setTimeout(() => { b.textContent = 'copy'; b.classList.remove('ok'); }, 1500);
+  });
+}));
+</script>
+</body>
+</html>

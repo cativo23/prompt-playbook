@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prompt Playbook — Construct</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#030a05;--g:#39ff7a;--g2:#1f7a3d;--line:#0f2a17;--fg:#e6f5ea;--dim:#7c9b86;--white:#f4fff7}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.7 Inter,system-ui,sans-serif}
+  .hero{position:relative;height:72vh;min-height:480px;overflow:hidden;border-bottom:1px solid var(--line)}
+  canvas{position:absolute;inset:0;width:100%;height:100%}
+  .hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(3,10,5,.2),var(--bg) 92%)}
+  .hero-in{position:relative;z-index:2;max-width:1040px;margin:auto;padding:0 16px;height:100%;display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:56px}
+  .tag{font-family:VT323,monospace;color:var(--g);font-size:22px;letter-spacing:.08em}
+  h1{font-size:clamp(42px,8vw,96px);line-height:.95;margin:8px 0 16px;font-weight:800;letter-spacing:-.035em;color:var(--white)}
+  h1 .glitch{color:var(--g);font-family:VT323,monospace;font-weight:400;letter-spacing:0}
+  .lead{max-width:560px;color:#b5cfbc;margin:0}
+  main{max-width:1040px;margin:auto;padding:0 16px}
+  .chapter{display:grid;grid-template-columns:220px 1fr;gap:40px;padding:72px 0;border-bottom:1px solid var(--line)}
+  @media(max-width:760px){.chapter{grid-template-columns:1fr;gap:12px}}
+  .num{font-family:VT323,monospace;font-size:72px;line-height:1;color:var(--g);text-shadow:0 0 22px rgba(57,255,122,.35)}
+  .num small{display:block;font-size:20px;color:var(--dim);letter-spacing:.12em}
+  h2{margin:0 0 18px;font-size:32px;letter-spacing:-.02em;color:var(--white)}
+  .rows div{display:grid;grid-template-columns:90px 1fr 1fr;gap:16px;padding:14px 0;border-top:1px solid var(--line)}
+  @media(max-width:560px){.rows div{grid-template-columns:80px 1fr}.rows div span:last-child{grid-column:2}}
+  .rows b{font-family:VT323,monospace;font-size:24px;font-weight:400;color:var(--g)}
+  .rows span:last-child{color:var(--dim)}
+  .ba{display:grid;gap:12px}
+  .ba div{padding:18px 20px;border:1px solid var(--line);font-family:VT323,monospace;font-size:22px;line-height:1.35}
+  .ba .no{color:#ff8fa0;border-left:3px solid #ff4d6d}
+  .ba .yes{color:var(--g);border-left:3px solid var(--g);background:rgba(57,255,122,.04)}
+  .ba .lab{display:block;font-family:Inter;font-size:12px;letter-spacing:.18em;color:var(--dim);margin-bottom:6px}
+  .copy{position:relative;border:1px solid var(--g2);padding:22px;font-family:VT323,monospace;font-size:22px;white-space:pre-wrap;line-height:1.35;background:rgba(57,255,122,.03)}
+  .copy button{position:absolute;top:12px;right:12px;font:600 13px Inter;background:var(--g);color:#000;border:none;padding:6px 12px;cursor:pointer}
+  footer{max-width:1040px;margin:auto;padding:40px 16px;color:var(--dim);font-family:VT323,monospace;font-size:20px}
+  @media(prefers-reduced-motion:reduce){canvas{display:none}}
+</style>
+</head>
+<body>
+<header class="hero">
+  <canvas id="rain"></canvas>
+  <div class="hero-in">
+    <div class="tag">// the construct · prompt playbook</div>
+    <h1>Free your <span class="glitch">context</span>.</h1>
+    <p class="lead">A field guide to prompting coding agents: ask for work they can finish, keep context small, stop paying for runaway sessions.</p>
+  </div>
+</header>
+
+<main>
+  <section class="chapter">
+    <div class="num">01<small>FORMULA</small></div>
+    <div>
+      <h2>Four pieces, one line each</h2>
+      <div class="rows">
+        <div><b>WHAT</b><span>Goal and exact location</span><span>Missing → explores the whole repo</span></div>
+        <div><b>LIMIT</b><span>What it must not touch</span><span>Missing → scope creep</span></div>
+        <div><b>DONE</b><span>Proof that it's finished</span><span>Missing → never stops</span></div>
+        <div><b>HOW</b><span>Model, agents, ask or decide</span><span>Missing → inherits the big model</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="chapter">
+    <div class="num">02<small>EXAMPLE</small></div>
+    <div>
+      <h2>Before → after</h2>
+      <div class="ba">
+        <div class="no"><span class="lab">VAGUE</span>"Fix the failing tests"</div>
+        <div class="yes"><span class="lab">SCOPED</span>"Run `test --filter=Cart`. 3 are red. Fix them one at a time, re-running after each. Done when all 3 pass and nothing else breaks."</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="chapter">
+    <div class="num">03<small>POCKET</small></div>
+    <div>
+      <h2>Copy, fill, send</h2>
+      <div class="copy"><button onclick="navigator.clipboard.writeText(this.parentNode.innerText.replace(/^Copy|Copied/,'').trim());this.textContent='Copied'">Copy</button>Goal: &lt;one sentence&gt;
+Only touch: &lt;file or folder&gt;
+Done when: &lt;test / output / screenshot&gt;
+Then stop and show me &lt;what&gt;.</div>
+    </div>
+  </section>
+</main>
+<footer>there is no spoon — only context</footer>
+<script>
+(() => {
+  const c = document.getElementById('rain'), x = c.getContext('2d');
+  const chars = 'ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄ01234567890';
+  let cols, drops, fs = 18;
+  function size(){ const r=c.getBoundingClientRect(); c.width=r.width; c.height=r.height; cols=Math.floor(c.width/fs); drops=Array(cols).fill(0).map(()=>Math.random()*-40); }
+  size(); addEventListener('resize', size);
+  setInterval(() => {
+    x.fillStyle='rgba(3,10,5,.1)'; x.fillRect(0,0,c.width,c.height);
+    x.font=fs+'px monospace';
+    for(let i=0;i<cols;i++){
+      x.fillStyle = Math.random()>.97 ? '#f4fff7' : '#39ff7a';
+      x.fillText(chars[Math.floor(Math.random()*chars.length)], i*fs, drops[i]*fs);
+      if(drops[i]*fs>c.height && Math.random()>.97) drops[i]=0;
+      drops[i]++;
+    }
+  }, 55);
+})();
+</script>
+</body>
+</html>

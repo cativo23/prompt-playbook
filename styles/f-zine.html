@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prompt Playbook — Zine</title>
+<style>
+  :root{--bg:#000;--fg:#c0c0c0;--hi:#fff;--g:#33ff33;--link:#5c9dff;--vis:#b480ff;--y:#ffff55}
+  body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 "Courier New",Courier,monospace;padding:24px 16px}
+  .page{max-width:78ch;margin:auto}
+  pre{margin:0;white-space:pre;overflow-x:auto}
+  .banner{color:var(--g)}
+  a{color:var(--link)} a:visited{color:var(--vis)} a:hover{background:var(--link);color:#000}
+  hr{border:0;border-top:1px dashed #555;margin:22px 0}
+  h2{font-size:15px;color:var(--hi);margin:0 0 10px} h2::before{content:"[ ";color:#777} h2::after{content:" ]";color:#777}
+  .hi{color:var(--hi)} .g{color:var(--g)} .y{color:var(--y)} .r{color:#ff5555} .dim{color:#777}
+  .center{text-align:center}
+  .blink{animation:b 1s steps(1) infinite}@keyframes b{50%{opacity:0}}
+  .copy{cursor:pointer;border:1px dotted #555;padding:10px;display:block}
+  .copy:hover{border-color:var(--g)}
+  @media(prefers-reduced-motion:reduce){.blink{animation:none}}
+</style>
+</head>
+<body>
+<div class="page">
+<pre class="banner">    ____  ____  ____  __  _______  ______ __ ______  __    _____  ______  ____  ____  __ __
+   / __ \/ __ \/ __ \/  |/  / __ \/_  __//_//_/ __ \/ /   /   \ \/ / __ )/ __ \/ __ \/ //_/
+  / /_/ / /_/ / / / / /|_/ / /_/ / / /_/_//_// /_/ / /   / /| |\  / __  / / / / / / / ,&lt;   
+ / ____/ _, _/ /_/ / /  / / ____/ / //_//_/ / ____/ /___/ ___ |/ / /_/ / /_/ / /_/ / /| |  
+/_/   /_/ |_|\____/_/  /_/_/     /_/_//_/  /_/   /_____/_/  |_/_/_____/\____/\____/_/ |_|  
+                                                                                           </pre>
+<pre class="dim">
+==============================================================================
+       Volume 0x01, Issue 0x01  ::  Phile #1 of 4  ::  November 2026
+==============================================================================
+</pre>
+<p class="center">[ <a href="#index">index</a> | <a href="#formula">formula</a> | <a href="#examples">examples</a> | <a href="#pocket">pocket</a> ]</p>
+<hr>
+
+<a id="index"></a><h2>0x00 :: INTRO</h2>
+<p>The agent does what you <span class="hi">ask</span>, not what you <span class="hi">mean</span>.
+Vague prompts = huge contexts = runaway agents = a weekly limit gone by
+Friday. This phile documents the fix. Four pieces. Read it, use it, spread it.</p>
+<hr>
+
+<a id="formula"></a><h2>0x01 :: THE FORMULA</h2>
+<pre>
+  +---------+---------------------------+-----------------------------+
+  | <span class="g">PIECE</span>   | <span class="g">ANSWERS</span>                   | <span class="g">IF MISSING...</span>               |
+  +---------+---------------------------+-----------------------------+
+  | <span class="y">WHAT</span>    | goal + exact location     | explores the whole repo     |
+  | <span class="y">LIMIT</span>   | what not to touch         | scope creep                 |
+  | <span class="y">DONE</span>    | proof it's finished       | never stops, keeps paying   |
+  | <span class="y">HOW</span>     | model, agents, ask/decide | inherits the big model      |
+  +---------+---------------------------+-----------------------------+
+</pre>
+<hr>
+
+<a id="examples"></a><h2>0x02 :: BEFORE / AFTER</h2>
+<pre>
+  <span class="r">[-] "Fix the failing tests"</span>
+
+  <span class="g">[+] "Run `test --filter=Cart`. 3 are red. Fix them one at a
+      time, re-running after each. Done when all 3 pass and
+      nothing else breaks."</span>
+</pre>
+<hr>
+
+<a id="pocket"></a><h2>0x03 :: POCKET PROMPT</h2>
+<p class="dim">-- click the box to copy --</p>
+<pre class="copy" onclick="navigator.clipboard.writeText(this.innerText)">Goal: &lt;one sentence&gt;
+Only touch: &lt;file or folder&gt;
+Done when: &lt;test / output / screenshot&gt;
+Then stop and show me &lt;what&gt;.</pre>
+<hr>
+
+<pre class="dim center">
+  greetz to everyone who ever ran out of context at 3am
+  ---------------------------------------------------------
+  best viewed in any browser at 80 columns  ::  EOF<span class="blink">_</span>
+</pre>
+</div>
+</body>
+</html>

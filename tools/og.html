@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<!-- Share card source. Rendered to assets/og.png (1200x630) by tools/make-og.sh. Same tokens as index.html. -->
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=JetBrains+Mono:wght@400;700&family=Inter:wght@800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#030a05;--g:#39ff7a;--g2:#1f9e4a;--white:#f4fff7;--dim:#7c9b86}
+html,body{margin:0;width:1200px;height:630px;overflow:hidden;background:var(--bg)}
+body{position:relative;font-family:Inter,sans-serif}
+#rain{position:absolute;inset:0;font:20px/22px monospace;color:var(--g2);opacity:.28;white-space:pre;overflow:hidden;letter-spacing:6px}
+.fade{position:absolute;inset:0;background:radial-gradient(ellipse at 40% 50%,rgba(3,10,5,.35),var(--bg) 78%)}
+.lines{position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0 2px,rgba(0,0,0,.2) 2px 3px)}
+.in{position:absolute;left:72px;right:72px;top:70px}
+pre{margin:0;font:700 14.5px/1.15 'JetBrains Mono',monospace;color:var(--g);text-shadow:0 0 8px rgba(57,255,122,.7),0 0 24px rgba(57,255,122,.35)}
+h1{margin:44px 0 14px;font-size:92px;line-height:.95;letter-spacing:-.04em;color:var(--white)}
+h1 span{font-family:VT323,monospace;font-weight:400;letter-spacing:0;color:var(--g);text-shadow:0 0 22px rgba(57,255,122,.55)}
+p{margin:0;font:400 26px/1.4 'JetBrains Mono',monospace;color:#b5cfbc;max-width:980px}
+.foot{position:absolute;left:72px;right:72px;bottom:46px;display:flex;justify-content:space-between;font:400 22px 'JetBrains Mono',monospace;color:var(--dim)}
+.foot b{color:var(--g);font-weight:400}
+</style></head><body>
+<div id="rain"></div><div class="fade"></div><div class="lines"></div>
+<div class="in">
+<pre>    ____  ____  ____  __  _______  ______ __ ______  __    _____  ______  ____  ____  __ __
+   / __ \/ __ \/ __ \/  |/  / __ \/_  __//_//_/ __ \/ /   /   \ \/ / __ )/ __ \/ __ \/ //_/
+  / /_/ / /_/ / / / / /|_/ / /_/ / / /_/_//_// /_/ / /   / /| |\  / __  / / / / / / / ,&lt;   
+ / ____/ _, _/ /_/ / /  / / ____/ / //_//_/ / ____/ /___/ ___ |/ / /_/ / /_/ / /_/ / /| |  
+/_/   /_/ |_|\____/_/  /_/_/     /_/_//_/  /_/   /_____/_/  |_/_/_____/\____/\____/_/ |_|  
+                                                                                           </pre>
+<h1>Free your <span>context.</span></h1>
+<p>A field guide to prompting coding agents.<br>Every fact links to its source.</p>
+</div>
+<div class="foot"><span><b>nospoon</b>.cativo.dev</span><span>Volume 0x01 :: Philes 0x00-0x08</span></div>
+<script>
+// deterministic pseudo-rain so re-renders are identical
+const ch='ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄ0123456789';let s=7,out='';
+for(let r=0;r<30;r++){let line='';for(let c=0;c<60;c++){s=(s*1103515245+12345)%2147483648;line+=(s%5===0)?ch[s%ch.length]:' ';}out+=line+'\n';}
+document.getElementById('rain').textContent=out;
+</script></body></html>

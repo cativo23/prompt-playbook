@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prompt Playbook — Shell</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0b0e0c;--panel:#0f1411;--fg:#d7e3da;--dim:#6f7d73;--green:#7ee787;--red:#ff7b72;--cyan:#79c0ff;--border:#24302a}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.6 'JetBrains Mono',ui-monospace,monospace;padding:32px 16px}
+  .win{max-width:860px;margin:auto;border:1px solid var(--border);border-radius:10px;background:var(--panel);overflow:hidden;box-shadow:0 20px 60px #0008}
+  .bar{display:flex;gap:8px;align-items:center;padding:10px 14px;border-bottom:1px solid var(--border);color:var(--dim);font-size:13px}
+  .dot{width:12px;height:12px;border-radius:50%}
+  .body{padding:24px 28px}
+  .cmd{color:var(--green)} .cmd::before{content:"$ ";color:var(--dim)}
+  h2{font-size:15px;color:var(--cyan);margin:22px 0 8px} h2::before{content:"## ";color:var(--dim)}
+  pre.tbl{margin:0;color:var(--fg);overflow-x:auto;line-height:1.25}
+  .del{color:var(--red)} .add{color:var(--green)}
+  .copy{position:relative;border:1px dashed var(--border);padding:14px 16px;margin-top:10px;white-space:pre-wrap}
+  .copy button{position:absolute;top:8px;right:8px;background:none;border:1px solid var(--border);color:var(--dim);font:inherit;font-size:12px;padding:2px 8px;cursor:pointer}
+  .copy button:hover{color:var(--green);border-color:var(--green)}
+  .cursor{display:inline-block;width:9px;height:17px;background:var(--green);vertical-align:-3px;animation:b 1s steps(1) infinite}
+  @keyframes b{50%{opacity:0}}
+</style>
+</head>
+<body>
+<div class="win">
+  <div class="bar"><span class="dot" style="background:#ff5f56"></span><span class="dot" style="background:#ffbd2e"></span><span class="dot" style="background:#27c93f"></span>&nbsp; ~/prompt-playbook — zsh</div>
+  <div class="body">
+    <div class="cmd">cat 01-the-formula.md</div>
+    <h2>The 4 pieces</h2>
+<pre class="tbl">┌──────────┬─────────────────────────┬─────────────────────────┐
+│ piece    │ answers                 │ if missing…             │
+├──────────┼─────────────────────────┼─────────────────────────┤
+│ WHAT     │ goal + exact location   │ explores the whole repo │
+│ LIMIT    │ what not to touch       │ scope creep             │
+│ DONE     │ proof it's finished     │ never stops             │
+│ HOW      │ model, agents, ask      │ inherits the big model  │
+└──────────┴─────────────────────────┴─────────────────────────┘</pre>
+    <h2>Before → after</h2>
+<pre><span class="del">- "Fix the failing tests"</span>
+<span class="add">+ "Run `test --filter=Cart`. 3 are red. Fix them one at a time,
++  re-running after each. Done when all 3 pass and nothing else breaks."</span></pre>
+    <h2>Pocket prompt</h2>
+    <div class="copy"><button onclick="navigator.clipboard.writeText(this.parentNode.innerText.replace('copy','').trim())">copy</button>Goal: &lt;one sentence&gt;
+Only touch: &lt;file or folder&gt;
+Done when: &lt;test / output / screenshot&gt;
+Then stop and show me &lt;what&gt;.</div>
+    <p class="cmd" style="margin-top:24px"><span class="cursor"></span></p>
+  </div>
+</div>
+</body>
+</html>
