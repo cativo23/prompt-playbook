@@ -11,6 +11,8 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="nospoon.cativo.dev">
 <meta property="og:url" content="https://nospoon.cativo.dev/">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="es_LA">
 <meta property="og:title" content="Prompt Playbook: free your context">
 <meta property="og:description" content="A field guide to prompting coding agents: ask for work they can finish and keep context small. Every fact links to its source.">
 <meta property="og:image" content="https://nospoon.cativo.dev/assets/og.png">
@@ -21,6 +23,9 @@
 <meta name="twitter:title" content="Prompt Playbook: free your context">
 <meta name="twitter:description" content="A field guide to prompting coding agents: ask for work they can finish and keep context small. Every fact links to its source.">
 <meta name="twitter:image" content="https://nospoon.cativo.dev/assets/og.png">
+<link rel="alternate" hreflang="en" href="https://nospoon.cativo.dev/">
+<link rel="alternate" hreflang="es" href="https://nospoon.cativo.dev/es/">
+<link rel="alternate" hreflang="x-default" href="https://nospoon.cativo.dev/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=VT323&family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
@@ -170,10 +175,20 @@ h2+pre.ascii,h2+.diff{margin-top:24px}
 .diff .row.minus,.diff .row.plus{overflow-wrap:anywhere}
 .copy .ttl{padding-right:84px}
 .copy+.note{margin-top:-6px;margin-bottom:22px}
+/* language toggle */
+.lang{position:fixed;top:10px;right:12px;z-index:70;display:flex;align-items:center;font-family:var(--mono);font-size:13px;background:rgba(3,10,5,.85);border:1px solid var(--line2);padding:2px 4px}
+.lang::before{content:"[";color:var(--dim);padding:0 2px}
+.lang::after{content:"]";color:var(--dim);padding:0 2px}
+.lang a{color:var(--dim);text-decoration:none;padding:13px 10px;line-height:1;min-width:40px;text-align:center}
+.lang a+a{border-left:1px solid var(--line2)}
+.lang a:hover{color:var(--g)}
+.lang a[aria-current]{color:#000;background:var(--g)}
+.lang a:focus-visible{outline:2px solid var(--g);outline-offset:2px}
 </style>
 </head>
 <body>
 <div id="progress"></div>
+<nav class="lang" aria-label="Language"><a href="/" lang="en" hreflang="en" aria-current="true">EN</a><a href="/es/" lang="es" hreflang="es">ES</a></nav>
 
 <header class="hero">
   <canvas id="rain" aria-hidden="true"></canvas>
@@ -749,6 +764,14 @@ document.querySelectorAll('.copy button').forEach(b => b.addEventListener('click
     setTimeout(() => { b.textContent = 'copy'; b.classList.remove('ok'); }, 1500);
   });
 }));
+
+// language toggle: keep the reader on the same section
+document.querySelectorAll('.lang a:not([aria-current])').forEach(a => a.addEventListener('click', e => {
+  let id = '';
+  document.querySelectorAll('section.chapter[id]').forEach(s => { if (s.getBoundingClientRect().top <= innerHeight * .35) id = s.id; });
+  if (id) { e.preventDefault(); location.href = a.getAttribute('href') + '#' + id; }
+}));
+document.querySelectorAll('.lang a[aria-current]').forEach(a => a.addEventListener('click', e => e.preventDefault()));
 </script>
 </body>
 </html>

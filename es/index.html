@@ -1,0 +1,781 @@
+<!doctype html>
+<html lang="es-419">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prompt Playbook en español</title>
+<meta name="description" content="Una guía de campo para darles prompts a agentes de código: pide trabajo que puedan terminar y mantén el contexto chico. Cada dato enlaza a su fuente.">
+<link rel="icon" type="image/png" href="/assets/icon.png">
+<link rel="apple-touch-icon" href="/assets/icon.png">
+<!-- Share card: rendered from tools/og.html by tools/make-og.sh. og:image needs an absolute URL. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="nospoon.cativo.dev">
+<meta property="og:url" content="https://nospoon.cativo.dev/es/">
+<meta property="og:locale" content="es_LA">
+<meta property="og:locale:alternate" content="en_US">
+<meta property="og:title" content="Prompt Playbook: libera tu contexto">
+<meta property="og:description" content="Una guía de campo para darles prompts a agentes de código: pide trabajo que puedan terminar y mantén el contexto chico. Cada dato enlaza a su fuente.">
+<meta property="og:image" content="https://nospoon.cativo.dev/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Prompt Playbook. Banner ASCII verde sobre lluvia de Matrix, con el texto en inglés: Free your context. A field guide to prompting coding agents. Every fact links to its source.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Prompt Playbook: libera tu contexto">
+<meta name="twitter:description" content="Una guía de campo para darles prompts a agentes de código: pide trabajo que puedan terminar y mantén el contexto chico. Cada dato enlaza a su fuente.">
+<meta name="twitter:image" content="https://nospoon.cativo.dev/assets/og.png">
+<link rel="alternate" hreflang="en" href="https://nospoon.cativo.dev/">
+<link rel="alternate" hreflang="es" href="https://nospoon.cativo.dev/es/">
+<link rel="alternate" hreflang="x-default" href="https://nospoon.cativo.dev/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#030a05; --bg2:#06120a; --line:#10301a; --line2:#1c4a2a;
+  --g:#39ff7a; --g2:#1f9e4a; --gdim:#3f7a52;
+  --fg:#d9eede; --white:#f4fff7; --dim:#7c9b86;
+  --red:#ff5f7a; --yel:#ffe066; --cyan:#6ee7ff;
+  --mono:'JetBrains Mono',ui-monospace,monospace; --vt:'VT323',monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.7 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+::selection{background:var(--g);color:#000}
+a{color:var(--g)}
+/* scanlines + vignette over everything */
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;
+  background:repeating-linear-gradient(0deg,transparent 0 2px,rgba(0,0,0,.18) 2px 3px),
+             radial-gradient(ellipse at center,transparent 60%,rgba(0,0,0,.55));}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:var(--g);box-shadow:0 0 12px var(--g);z-index:60}
+
+/* ---------- HERO ---------- */
+.hero{position:relative;min-height:100vh;overflow:hidden;display:flex;align-items:flex-end;border-bottom:1px solid var(--line)}
+#rain{position:absolute;inset:0;width:100%;height:100%}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(3,10,5,.15) 0%,rgba(3,10,5,.55) 55%,var(--bg) 96%)}
+.hero-in{position:relative;z-index:2;width:100%;text-align:center;max-width:1100px;margin:auto;padding:0 16px 9vh}
+.banner{font-family:var(--mono);font-size:clamp(7px,1.2vw,15px);line-height:1.15;color:var(--g);margin:0;
+  text-shadow:0 0 8px rgba(57,255,122,.7),0 0 26px rgba(57,255,122,.35);white-space:pre;overflow:hidden;width:fit-content;max-width:100%;margin-left:auto;margin-right:auto}
+.banner.sm{display:none}
+@media(max-width:720px){.banner.lg{display:none}.banner.sm{display:table;font-size:clamp(7px,2.4vw,12px)}}
+.zinehead{font-family:var(--mono);font-size:clamp(8px,1.6vw,13px);color:var(--dim);margin:22px 0 10px;white-space:pre;overflow:hidden;width:fit-content;max-width:100%;margin-left:auto;margin-right:auto}
+h1{font-size:clamp(44px,8.5vw,108px);line-height:.95;margin:6px 0 18px;font-weight:800;letter-spacing:-.04em;color:var(--white)}
+h1 .ctx{white-space:nowrap;font-family:var(--vt);font-weight:400;letter-spacing:0;color:var(--g);text-shadow:0 0 22px rgba(57,255,122,.55)}
+.caret{display:inline-block;width:.45em;height:.8em;background:var(--g);vertical-align:-.05em;margin-left:4px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.lead{max-width:620px;color:#b5cfbc;margin:0 auto 28px;font-size:19px}
+.cta{display:flex;justify-content:center;gap:14px;flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:14px;padding:12px 18px;border:1px solid var(--g);color:var(--g);text-decoration:none;background:rgba(57,255,122,.06);transition:.15s}
+.btn:hover{background:var(--g);color:#000;box-shadow:0 0 24px rgba(57,255,122,.5)}
+.btn.ghost{border-color:var(--line2);color:var(--dim)}
+.btn.ghost:hover{border-color:var(--g);color:#000}
+
+/* ---------- INDEX ---------- */
+main{max-width:1100px;margin:auto;padding:0 16px}
+.index{font-family:var(--mono);font-size:14px;padding:56px 0 24px;border-bottom:1px dashed var(--line2)}
+.index pre{margin:0;color:var(--dim);overflow-x:auto}
+.index a{color:var(--fg);text-decoration:none} .index a:hover{color:#000;background:var(--g)}
+.index .h{color:var(--g)}
+
+/* ---------- CHAPTERS ---------- */
+.chapter{display:grid;grid-template-columns:230px 1fr;gap:48px;padding:88px 0;border-bottom:1px dashed var(--line2)}
+@media(max-width:820px){.chapter{grid-template-columns:1fr;gap:10px;padding:64px 0}}
+.num{position:sticky;top:28px;align-self:start}
+@media(max-width:820px){.num{position:static}}
+.num .hex{font-family:var(--vt);font-size:96px;line-height:.85;color:var(--g);text-shadow:0 0 26px rgba(57,255,122,.35)}
+.num .lab{display:block;font-family:var(--mono);font-size:12px;letter-spacing:.2em;color:var(--dim);margin-top:10px}
+.num .lab::before{content:"[ "} .num .lab::after{content:" ]"}
+h2{margin:0 0 8px;font-size:clamp(28px,3.6vw,40px);letter-spacing:-.025em;line-height:1.1;color:var(--white)}
+.sub{color:var(--dim);margin:0 0 30px;font-size:18px}
+h3{font-family:var(--mono);font-size:14px;letter-spacing:.12em;color:var(--g);margin:38px 0 12px;font-weight:700}
+h3::before{content:"// ";color:var(--gdim)}
+p{margin:0 0 16px} strong{color:var(--white)}
+code{font-family:var(--mono);font-size:.86em;color:var(--cyan);background:rgba(110,231,255,.07);padding:1px 6px;border-radius:3px}
+
+/* ascii table */
+pre.ascii{font-family:var(--mono);font-size:14px;line-height:1.45;margin:0 0 8px;overflow-x:auto;color:var(--fg);padding:4px 0}
+pre.ascii .k{color:var(--yel)} pre.ascii .h{color:var(--g)} pre.ascii .d{color:var(--dim)} pre.ascii .r{color:var(--red)}
+
+/* diff cards */
+.diff{border:1px solid var(--line);background:var(--bg2);margin:0 0 18px}
+.diff .ttl{font-family:var(--mono);font-size:12px;letter-spacing:.15em;color:var(--dim);padding:10px 16px;border-bottom:1px solid var(--line)}
+.diff .row{font-family:var(--mono);font-size:15px;line-height:1.55;padding:14px 16px 14px 46px;position:relative}
+.diff .row::before{position:absolute;left:16px;font-weight:700}
+.diff .minus{color:#ffb3c0;background:rgba(255,95,122,.06)} .diff .minus::before{content:"[-]";color:var(--red)}
+.diff .plus{color:#bdf7cf;background:rgba(57,255,122,.05);border-top:1px solid var(--line)} .diff .plus::before{content:"[+]";color:var(--g)}
+.diff .why{font-size:15px;color:var(--dim);padding:10px 16px;border-top:1px dashed var(--line)}
+.diff .why b{color:var(--yel);font-weight:600}
+
+/* meters */
+.meter{display:grid;grid-template-columns:96px 1fr 92px;gap:14px;align-items:center;font-family:var(--mono);font-size:14px;margin:10px 0}
+.meter .bar{height:14px;background:#0b1f12;border:1px solid var(--line);position:relative;overflow:hidden}
+.meter .bar i{position:absolute;inset:0 auto 0 0;width:0;transition:width 1.4s cubic-bezier(.2,.8,.2,1)}
+.meter .bar i::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 6px,rgba(0,0,0,.35) 6px 8px)}
+.meter .x{text-align:right;color:var(--white)}
+.note{font-size:14px;color:var(--dim);border-left:2px solid var(--line2);padding-left:12px;margin-top:18px}
+
+/* callout */
+.rule{border:1px solid var(--g2);background:linear-gradient(90deg,rgba(57,255,122,.08),transparent);padding:20px 22px;margin:26px 0;position:relative}
+.rule::before{content:"REGLA";position:absolute;top:-10px;left:16px;background:var(--bg);padding:0 8px;font-family:var(--mono);font-size:12px;letter-spacing:.2em;color:var(--g)}
+.rule p{margin:0;font-size:19px;color:var(--white)}
+
+/* checklist */
+ol.check{list-style:none;padding:0;margin:0;counter-reset:c}
+ol.check li{counter-increment:c;padding:12px 0 12px 54px;position:relative;border-top:1px solid var(--line)}
+ol.check li::before{content:"0x0" counter(c);position:absolute;left:0;font-family:var(--mono);font-size:13px;color:var(--g);top:15px}
+ol.check li b{color:var(--white)}
+
+/* copy blocks */
+.copy{position:relative;border:1px solid var(--line2);background:var(--bg2);margin:0 0 18px}
+.copy .ttl{font-family:var(--mono);font-size:12px;letter-spacing:.15em;color:var(--g);padding:10px 16px;border-bottom:1px solid var(--line)}
+.copy pre{font-family:var(--mono);font-size:14.5px;line-height:1.6;margin:0;padding:16px;white-space:pre-wrap;color:var(--fg)}
+.copy pre .ph{color:var(--yel)}
+.copy button{position:absolute;top:6px;right:8px;font-family:var(--mono);font-size:12px;background:transparent;border:1px solid var(--line2);color:var(--dim);padding:4px 10px;cursor:pointer}
+.copy button:hover{border-color:var(--g);color:var(--g)}
+.copy button.ok{background:var(--g);color:#000;border-color:var(--g)}
+
+/* two cols */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:700px){.two{grid-template-columns:1fr}}
+.box{border:1px solid var(--line);padding:18px;background:var(--bg2)}
+.box .t{font-family:var(--mono);font-size:13px;letter-spacing:.12em;margin-bottom:8px}
+.box.bad .t{color:var(--red)} .box.good .t{color:var(--g)}
+.box p{font-size:15.5px;margin:0}
+
+/* settings */
+.set{font-family:var(--mono);font-size:14px;border-top:1px solid var(--line);padding:16px 0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:20px}
+@media(max-width:700px){.set{grid-template-columns:1fr;gap:6px}}
+.set .key{color:var(--cyan);word-break:break-all} .set .key span{color:var(--yel)}
+.set .what{font-family:Inter;font-size:15.5px;color:var(--fg)}
+
+/* reveal */
+.rv{opacity:0;transform:translateY(18px);transition:opacity .7s,transform .7s}
+.rv.in{opacity:1;transform:none}
+
+footer{max-width:1100px;margin:auto;padding:64px 16px 80px;font-family:var(--mono);font-size:13px;color:var(--dim)}
+footer pre{margin:0;white-space:pre-wrap}
+footer .g{color:var(--g)}
+
+@media(prefers-reduced-motion:reduce){#rain{display:none}.rv{opacity:1;transform:none}.caret{animation:none}.meter .bar i{transition:none}}
+/* content additions: source links, advice tag, bullet lists */
+a.src{font-family:var(--mono);font-size:.76em;color:var(--gdim);text-decoration:none;border-bottom:1px dotted var(--gdim);white-space:nowrap;margin-left:2px}
+a.src:hover{color:#000;background:var(--g);border-bottom-color:var(--g)}
+pre.ascii a.src{font-size:1em;margin-left:0}
+.adv{font-family:var(--mono);font-size:.82em;font-weight:700;color:var(--yel);letter-spacing:.04em}
+ul.bul{list-style:none;padding:0;margin:0 0 16px}
+ul.bul li{position:relative;padding:11px 0 11px 26px;border-top:1px solid var(--line)}
+ul.bul li::before{content:">";position:absolute;left:4px;top:11px;font-family:var(--mono);color:var(--g)}
+ul.bul li b{color:var(--white)}
+.chapter>div{min-width:0}
+main code{overflow-wrap:anywhere}
+@media(max-width:820px){.chapter{grid-template-columns:minmax(0,1fr)}}
+.set.s2{grid-template-columns:90px minmax(0,1fr)}
+@media(max-width:700px){.set.s2{grid-template-columns:1fr}}
+h2+pre.ascii,h2+.diff{margin-top:24px}
+.diff .row.txt{padding-left:16px;font-family:Inter,system-ui,sans-serif;font-size:15.5px}
+.diff .row.minus,.diff .row.plus{overflow-wrap:anywhere}
+.copy .ttl{padding-right:84px}
+.copy+.note{margin-top:-6px;margin-bottom:22px}
+/* language toggle */
+.lang{position:fixed;top:10px;right:12px;z-index:70;display:flex;align-items:center;font-family:var(--mono);font-size:13px;background:rgba(3,10,5,.85);border:1px solid var(--line2);padding:2px 4px}
+.lang::before{content:"[";color:var(--dim);padding:0 2px}
+.lang::after{content:"]";color:var(--dim);padding:0 2px}
+.lang a{color:var(--dim);text-decoration:none;padding:13px 10px;line-height:1;min-width:40px;text-align:center}
+.lang a+a{border-left:1px solid var(--line2)}
+.lang a:hover{color:var(--g)}
+.lang a[aria-current]{color:#000;background:var(--g)}
+.lang a:focus-visible{outline:2px solid var(--g);outline-offset:2px}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<nav class="lang" aria-label="Idioma"><a href="/" lang="en" hreflang="en">EN</a><a href="/es/" lang="es" hreflang="es" aria-current="true">ES</a></nav>
+
+<header class="hero">
+  <canvas id="rain" aria-hidden="true"></canvas>
+  <div class="hero-in">
+<pre class="banner lg" aria-hidden="true">    ____  ____  ____  __  _______  ______ __ ______  __    _____  ______  ____  ____  __ __
+   / __ \/ __ \/ __ \/  |/  / __ \/_  __//_//_/ __ \/ /   /   \ \/ / __ )/ __ \/ __ \/ //_/
+  / /_/ / /_/ / / / / /|_/ / /_/ / / /_/_//_// /_/ / /   / /| |\  / __  / / / / / / / ,&lt;   
+ / ____/ _, _/ /_/ / /  / / ____/ / //_//_/ / ____/ /___/ ___ |/ / /_/ / /_/ / /_/ / /| |  
+/_/   /_/ |_|\____/_/  /_/_/     /_/_//_/  /_/   /_____/_/  |_/_/_____/\____/\____/_/ |_|  
+                                                                                           </pre>
+<pre class="banner sm" aria-hidden="true">    ____  ____  ____  __  _______  ______
+   / __ \/ __ \/ __ \/  |/  / __ \/_  __/
+  / /_/ / /_/ / / / / /|_/ / /_/ / / /   
+ / ____/ _, _/ /_/ / /  / / ____/ / /    
+/_/   /_/ |_|\____/_/  /_/_/     /_/     
+                                         
+    ____  __    _____  ______  ____  ____  __ __
+   / __ \/ /   /   \ \/ / __ )/ __ \/ __ \/ //_/
+  / /_/ / /   / /| |\  / __  / / / / / / / ,&lt;   
+ / ____/ /___/ ___ |/ / /_/ / /_/ / /_/ / /| |  
+/_/   /_____/_/  |_/_/_____/\____/\____/_/ |_|  
+                                                </pre>
+<pre class="zinehead">==========================================================================
+  Vol. 0x01 :: Núm. 0x01 :: Philes 0x00-0x08 :: guía de campo para agentes
+==========================================================================</pre>
+    <h1>Libera <span class="ctx"><span id="type"></span><span class="caret"></span></span></h1>
+    <p class="lead">El agente hace lo que <strong>pides</strong>, no lo que <strong>quieres decir</strong>. Los prompts vagos tienden a volverse contextos grandes, y un contexto grande consume uso en cada turno. Este zine es el arreglo.</p>
+    <div class="cta"><a class="btn" href="#formula">&gt; sigue al conejo blanco</a><a class="btn ghost" href="#pocket">ir a los prompts de bolsillo</a></div>
+  </div>
+</header>
+
+<main>
+  <nav class="index rv" aria-label="Índice">
+<pre><span class="h">-[ ÍNDICE ]-------------------------------------------------------------------</span>
+  0x00  <a href="#why">Por qué los prompts gastan tokens .......................... la física</a>
+  0x01  <a href="#formula">La fórmula (QUÉ / LÍMITE / LISTO / CÓMO) ............... cuatro piezas</a>
+  0x02  <a href="#examples">Antes / después ........................... menos rondas de corrección</a>
+  0x03  <a href="#agents">Prompts para agentes .............................. delega a propósito</a>
+  0x04  <a href="#context">Higiene de contexto ..................... limpia, compacta a propósito</a>
+  0x05  <a href="#output">Pedir la salida que quieres ..................... la forma que quieres</a>
+  0x06  <a href="#pocket">Prompts de bolsillo ........................... copia, completa, envía</a>
+  0x07  <a href="#settings">Ajustes que te protegen ................................. una sola vez</a>
+  0x08  <a href="#field">Notas de campo: una semana medida .................. una semana medida</a>
+<span class="h">------------------------------------------------------------------------------</span></pre>
+  </nav>
+  <div class="note rv" style="margin:28px 0 0">
+    <p style="margin:0 0 6px">Cada dato lleva un enlace a su fuente. Las líneas marcadas como "Consejo" son reglas prácticas, no hechos. Las fuentes son la documentación oficial, en inglés.</p>
+    <p style="margin:0 0 6px">0x08 es distinta: son notas de campo de una semana medida de un desarrollador, no documentación.</p>
+    <p style="margin:0">Los valores por defecto que dependen de la versión o del plan se revisaron el 2026-11-14 y pueden cambiar.</p>
+  </div>
+
+  <!-- 0x00 -->
+  <section class="chapter" id="why">
+    <div class="num rv"><div class="hex">0x00</div><span class="lab">LA FÍSICA</span></div>
+    <div>
+      <div class="rv">
+      <h2>Cada turno vuelve a leerlo todo</h2>
+      <p>El modelo no guarda memoria entre solicitudes, así que en cada turno el agente reenvía el contexto completo: el prompt del sistema, el contexto del proyecto, cada mensaje anterior y cada resultado de herramienta, más tu mensaje nuevo. La caché solo evita reprocesar el prefijo que no cambió, que se relee a una tarifa de caché más barata. El contexto se sigue cargando y cobrando en cada turno. <a class="src" href="https://code.claude.com/docs/en/prompt-caching">[prompt-caching]</a></p>
+      <p>El costo crece con el tamaño del contexto, y el uso de herramientas lo multiplica: cada llamada a una herramienta dispara otra solicitud que lleva todo el historial. Aun con caché, una pregunta de una línea en una sesión abierta todo el día sigue consumiendo uso por toda la conversación. <a class="src" href="https://code.claude.com/docs/en/costs">[costs]</a></p>
+      </div>
+      <div class="rv">
+      <h3>CÓMO FUNCIONA LA CACHÉ</h3>
+<ul class="bul">
+<li>La coincidencia es de prefijo exacto. Un cambio en cualquier parte del prefijo obliga a recalcular todo lo que viene después; no hay caché por archivo ni por segmento. El contenido que casi no cambia (prompt del sistema, definiciones de herramientas, contexto del proyecto) va primero y la conversación al final, así que agregar es barato y modificar contenido temprano es caro. <a class="src" href="https://code.claude.com/docs/en/prompt-caching">[prompt-caching]</a></li>
+<li>Los prefijos en caché expiran tras un periodo de inactividad, y cada acierto de caché reinicia el temporizador. El primer mensaje después de una pausa más larga que la vida de la caché reprocesa el contexto completo (más lento y más costoso). <a class="src" href="https://code.claude.com/docs/en/prompt-caching">[prompt-caching]</a></li>
+<li>La API ofrece un TTL de 5 minutos y otro de 1 hora. El de 1 hora cobra una tarifa más alta por escribir en la caché, así que sirve cuando dejas una sesión inactiva y vuelves, y cuesta más en ráfagas cortas que nunca llegan a cinco minutos de inactividad. <a class="src" href="https://code.claude.com/docs/en/prompt-caching">[prompt-caching]</a></li>
+<li>El TTL por defecto en Claude Code depende de cómo pagas. La conversación principal recibe 1 hora solo con una suscripción de Claude dentro del uso incluido en el plan; con créditos de uso, una clave de API o un proveedor de nube recibe 5 minutos. Los subagentes, los workflows, la compactación y los títulos de sesión usan 5 minutos por defecto, salvo un conjunto pequeño de solicitudes auxiliares controladas por el servidor en una suscripción. Los controles de TTL requieren v2.1.242+. Los valores por defecto pueden cambiar, así que tómalo como cierto al 2026-11-14. <a class="src" href="https://code.claude.com/docs/en/prompt-caching">[prompt-caching]</a></li>
+</ul>
+      </div>
+      <div class="rv">
+      <h3>DÓNDE SE FILTRA</h3>
+      <p>Las sesiones inactivas igual pueden consumir uso:</p>
+<pre class="ascii">  +------------------------+----------------------------------------+----------------------+
+  | <span class="h">FUGA</span>                   | <span class="h">POR QUÉ DAÑA</span>                           | <span class="h">FUENTE</span>               |
+  +------------------------+----------------------------------------+----------------------+
+  | <span class="k">tareas programadas</span>     | se disparan en su intervalo con la     | <a class="src" href="https://code.claude.com/docs/en/costs">[costs]</a>              |
+  | <span class="k">de la sesión</span>           | sesión inactiva y envían todo el       |                      |
+  |                        | contexto cada vez                      |                      |
+  +------------------------+----------------------------------------+----------------------+
+  | <span class="k">mensajes de otras</span>      | se entregan como un turno nuevo        | <a class="src" href="https://code.claude.com/docs/en/costs">[costs]</a>              |
+  | <span class="k">sesiones</span>               | cuando la sesión está inactiva         |                      |
+  +------------------------+----------------------------------------+----------------------+
+  | <span class="k">chequeos de</span>            | pueden iniciar turnos inactivos        | <a class="src" href="https://code.claude.com/docs/en/costs">[costs]</a>              |
+  | <span class="k">objetivo</span>               | (como máximo tres por objetivo entre   |                      |
+  |                        | tus prompts)                           |                      |
+  +------------------------+----------------------------------------+----------------------+
+  | <span class="k">resumen de sesión y</span>    | pueden gastar tokens mientras no       | <a class="src" href="https://code.claude.com/docs/en/costs">[costs]</a>,             |
+  | <span class="k">compactación inactiva</span>  | estás; la compactación inactiva        | <a class="src" href="https://code.claude.com/docs/en/prompt-caching">[prompt-caching]</a>     |
+  |                        | aplica a una conversación con el       |                      |
+  |                        | TTL de una hora                        |                      |
+  +------------------------+----------------------------------------+----------------------+</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- 0x01 -->
+  <section class="chapter" id="formula">
+    <div class="num rv"><div class="hex">0x01</div><span class="lab">LA FÓRMULA</span></div>
+    <div>
+      <div class="rv">
+      <h2>Cuatro piezas, una línea cada una</h2>
+      <p>Un prompt no necesita ser largo. <b class="adv">Consejo:</b> haz que responda cuatro preguntas.</p>
+<pre class="ascii">  +---------+-----------------------------------------------+
+  | <span class="h">PIEZA</span>   | <span class="h">RESPONDE</span>                                      |
+  +---------+-----------------------------------------------+
+  | <span class="k">QUÉ</span>     | objetivo, más el archivo o área y el síntoma  |
+  | <span class="k">LÍMITE</span>  | alcance, en cualquier dirección               |
+  | <span class="k">LISTO</span>   | una verificación que devuelve pasa o falla    |
+  | <span class="k">CÓMO</span>    | preferencias, modo plan, razones              |
+  +---------+-----------------------------------------------+</pre>
+      </div>
+      <div class="rv">
+      <h3>RESPALDO</h3>
+      <div class="set s2"><div class="key">QUÉ</div><div class="what">Nombra el archivo o el área, describe el síntoma y di desde el principio cómo se ve "arreglado". Esto le da al agente información que no puede sacar del repo y por lo general ahorra una ronda de correcciones. <a class="src" href="https://code.claude.com/docs/en/best-practices">[best-practices]</a></div></div>
+      <div class="set s2"><div class="key">LÍMITE</div><div class="what">El agente tiende a leer una petición de forma conservadora y a construir lo más pequeño que la satisfaga. Si quieres casos límite, estados vacíos y de error o la continuación natural, dilo (la documentación usa la frase "be ambitious"). <a class="src" href="https://code.claude.com/docs/en/best-practices">[best-practices]</a> <b class="adv">Consejo:</b> el alcance es tuyo, así que dilo en los dos sentidos.</div></div>
+      <div class="set s2"><div class="key">LISTO</div><div class="what">Sin una verificación, lo único que tiene el agente para guiarse es que "parece terminado", y en la práctica tú te conviertes en la suite de pruebas. Ejemplos de verificaciones: pruebas, código de salida del build, linter, diff de fixtures, captura de pantalla vs maqueta. <a class="src" href="https://code.claude.com/docs/en/best-practices">[best-practices]</a></div></div>
+      <div class="set s2"><div class="key">CÓMO</div><div class="what">Si te importa cuál de dos enfoques razonables elige el agente, dilo, porque no se puede leer en el código. <a class="src" href="https://code.claude.com/docs/en/best-practices">[best-practices]</a> Explica la razón detrás de una instrucción, no solo la regla; el contexto o la motivación ayuda al modelo a dar resultados más enfocados. <a class="src" href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices">[prompting best practices]</a></div></div>
+      <div class="rule"><p><span class="adv">(consejo)</span> Termina cada prompt de trabajo con la verificación que prueba que está terminado ("Listo cuando ___").</p></div>
+      </div>
+      <div class="rv">
+      <h3>VERIFICACIONES BÁSICAS</h3>
+<ul class="bul">
+<li><b>Prueba del colega:</b> si un colega con contexto mínimo se confundiría con tu prompt, el modelo también. Usa listas numeradas o viñetas cuando importa el orden de los pasos o que no falte ninguno. <a class="src" href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices">[prompting best practices]</a></li>
+<li><b>Pide evidencia:</b> pide el comando ejecutado y su salida, o una captura de pantalla, no solo "todas las pruebas pasan". En una sesión que no estabas mirando, es la única evidencia que tienes. <a class="src" href="https://code.claude.com/docs/en/best-practices">[best-practices]</a></li>
+<li><b>Planear antes de actuar:</b> el modo plan deja que el agente lea archivos y proponga un plan sin editar nada hasta que lo apruebes. Entra con <code>claude --permission-mode plan</code> o con Shift+Tab a mitad de la sesión. Úsalo para cambios que quieras revisar antes de que toquen el disco. <a class="src" href="https://code.claude.com/docs/en/common-workflows">[common-workflows]</a></li>
+<li><b>Corrige el rumbo temprano:</b> mira el primer minuto y presiona Esc en cuanto el agente se desvíe. Esc detiene a mitad de acción y conserva todo hasta ese punto; <code>/rewind</code> (o Esc dos veces con el prompt vacío) abre un menú para devolver el código, la conversación o ambos a un prompt anterior. <a class="src" href="https://code.claude.com/docs/en/best-practices">[best-practices]</a></li>
+<li><b>Explorar es distinto:</b> los prompts vagos sirven para explorar (p. ej. "¿qué mejorarías en este archivo?"). Corregirás un poco más sobre la marcha. Pon la especificidad donde ya sabes lo que quieres. <a class="src" href="https://code.claude.com/docs/en/best-practices">[best-practices]</a></li>
+</ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 0x02 -->
+  <section class="chapter" id="examples">
+    <div class="num rv"><div class="hex">0x02</div><span class="lab">ANTES / DESPUÉS</span></div>
+    <div>
+      <div class="rv">
+      <h2>Misma intención, menos rondas de corrección</h2>
+<div class="diff">
+<div class="ttl">PATCH 01 :: SIN SÍNTOMA, SIN UBICACIÓN, SIN VERIFICACIÓN</div>
+<div class="row minus">arregla el bug del login</div>
+<div class="row plus">los usuarios reportan que el login falla después de que expira la sesión. revisa la renovación del token en src/auth/, escribe una prueba que falle y reproduzca el error, y luego corrígelo</div>
+<div class="why"><b>Agregado:</b> síntoma, ubicación, una prueba que falla y reproduce el error, y luego la corrección. <a class="src" href="https://code.claude.com/docs/en/best-practices">[best-practices]</a></div>
+</div>
+      </div>
+      <div class="rv">
+<div class="diff">
+<div class="ttl">PATCH 02 :: SIN PATRÓN, SIN RESTRICCIÓN</div>
+<div class="row minus">agrega un widget de calendario</div>
+<div class="row plus">sigue el patrón de ExistingWidget.php y crea un widget de calendario que permita elegir un mes y pasar de un año a otro. sin librerías nuevas</div>
+<div class="why"><b>Agregado:</b> un patrón existente que copiar y una restricción. (El ejemplo de la documentación usa otro nombre de archivo.) <a class="src" href="https://code.claude.com/docs/en/best-practices">[best-practices]</a></div>
+</div>
+      </div>
+      <div class="rv">
+      <div class="diff">
+<div class="ttl">PATCH 03 :: DESCRIBIR LA COSA EN VEZ DE ENTREGARLA</div>
+<div class="row txt">Referencia un archivo con <code>@path</code>, pega capturas de pantalla de diseños o errores, y canaliza la salida de comandos hacia el prompt. El ejemplo de la documentación es <code>cat error.log | claude -p "what's going on here"</code>. <a class="src" href="https://code.claude.com/docs/en/best-practices">[best-practices]</a></div>
+</div>
+      </div>
+      <div class="rv">
+<div class="diff">
+<div class="ttl">PATCH 04 :: SUGERENCIAS CUANDO QUERÍAS ACCIÓN</div>
+<div class="row minus">¿puedes sugerir algunos cambios a la lógica de reintentos?</div>
+<div class="row plus">cambia la lógica de reintentos para que aplique backoff después del tercer fallo</div>
+<div class="why">Una frase como "¿puedes sugerir algunos cambios?" puede producir sugerencias en vez de ediciones, así que di "cambia esto" cuando quieras que se haga el cambio. <a class="src" href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices">[prompting best practices]</a></div>
+</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 0x03 -->
+  <section class="chapter" id="agents">
+    <div class="num rv"><div class="hex">0x03</div><span class="lab">AGENTES</span></div>
+    <div>
+      <div class="rv">
+      <h2>Empieza con poco, delega a propósito</h2>
+      <h3>SUBAGENTE O EQUIPO</h3>
+      <p>Empieza con un subagente, no con un equipo de agentes. Los subagentes trabajan dentro de una sola sesión y le devuelven un resultado a quien los llamó. Los integrantes de un equipo son sesiones separadas y totalmente independientes que se mandan mensajes directamente entre sí. Los subagentes cuestan menos porque sus resultados vuelven resumidos al contexto principal; los equipos cuestan más porque cada integrante es su propia instancia de Claude. Usa subagentes para trabajadores enfocados que reportan de vuelta, y equipos cuando los trabajadores necesitan compartir hallazgos y cuestionarse entre ellos. <a class="src" href="https://code.claude.com/docs/en/agent-teams">[agent-teams]</a></p>
+      </div>
+      <div class="rv">
+      <h3>COSTO</h3>
+<ul class="bul">
+<li>Los equipos cuestan bastante más que una sola sesión, y el uso crece con la cantidad de integrantes activos y con el tiempo que corre cada uno. La guía de costos de Anthropic dice que los equipos de agentes usan aproximadamente 7x más tokens que las sesiones estándar cuando los integrantes corren en plan mode. <a class="src" href="https://code.claude.com/docs/en/costs">[costs]</a> Para tareas rutinarias, una sola sesión es más económica. <a class="src" href="https://code.claude.com/docs/en/agent-teams">[agent-teams]</a></li>
+<li>El sistema de investigación multiagente de Anthropic midió que los agentes usan cerca de 4x más tokens que un chat, y los sistemas multiagente cerca de 15x más. El uso de tokens por sí solo explicó el 80% de la varianza en BrowseComp. Reserva las configuraciones multiagente para tareas cuyo valor sea lo bastante alto como para pagar el mayor rendimiento. <a class="src" href="https://www.anthropic.com/engineering/multi-agent-research-system">[Anthropic engineering]</a></li>
+<li>Las solicitudes de los subagentes igual consumen tu uso. <a class="src" href="https://code.claude.com/docs/en/costs">[costs]</a></li>
+</ul>
+      </div>
+      <div class="rv">
+      <h3>LOS SUBAGENTES AHORRAN CONTEXTO</h3>
+      <p>Delega las operaciones verbosas (correr pruebas, traer documentación, procesar logs) para que la salida ruidosa se quede en el contexto del subagente y solo vuelva un resumen. Aun así, muchos subagentes que devuelven resultados detallados pueden consumir bastante contexto de la conversación principal, y cada subagente gasta sus propios tokens. <a class="src" href="https://code.claude.com/docs/en/sub-agents">[sub-agents]</a> <b class="adv">Consejo:</b> pide resúmenes concisos.</p>
+      </div>
+      <div class="rv">
+      <h3>CÓMO ESCRIBIR EL PROMPT DE DELEGACIÓN</h3>
+<ul class="bul">
+<li>Todo trabajador delegado necesita un objetivo, un formato de salida, indicaciones sobre herramientas y fuentes, y límites claros para la tarea. Sin descripciones detalladas de la tarea, Anthropic encontró que los agentes duplican trabajo, dejan huecos o no logran encontrar la información necesaria. <a class="src" href="https://www.anthropic.com/engineering/multi-agent-research-system">[Anthropic engineering]</a></li>
+<li>Un integrante carga el mismo contexto de proyecto que una sesión normal (CLAUDE.md, servidores MCP, skills) más el prompt de lanzamiento, pero el historial de conversación del líder no se transfiere. <a class="src" href="https://code.claude.com/docs/en/agent-teams">[agent-teams]</a> Todo lo que va en el prompt de lanzamiento se suma a su contexto desde el inicio. <a class="src" href="https://code.claude.com/docs/en/costs">[costs]</a> <b class="adv">Consejo:</b> incluye los detalles de la tarea que necesita (alcance, archivos, restricciones, salida esperada) y poco más.</li>
+<li>Dimensiona las tareas como unidades autocontenidas con un entregable claro, como una función, un archivo de pruebas o una revisión. Si son muy chicas, el costo de coordinación supera el beneficio; si son muy grandes, los integrantes trabajan demasiado tiempo sin puntos de control y sube el riesgo de esfuerzo desperdiciado. La documentación sugiere 5-6 tareas por integrante. Dale a cada integrante un conjunto distinto de archivos, porque dos integrantes que editan el mismo archivo terminan sobrescribiéndose. <a class="src" href="https://code.claude.com/docs/en/agent-teams">[agent-teams]</a></li>
+<li>El esfuerzo debe escalar con la tarea. En el sistema de investigación de Anthropic: buscar un dato simple necesita 1 agente con 3-10 llamadas a herramientas, las comparaciones directas 2-4 subagentes con 10-15 llamadas cada uno, y la investigación compleja más de 10 subagentes. Son pautas de ese sistema, no una regla de Claude Code. <a class="src" href="https://www.anthropic.com/engineering/multi-agent-research-system">[Anthropic engineering]</a></li>
+</ul>
+      </div>
+      <div class="rv">
+      <h3>MANTÉN LOS EQUIPOS CHICOS Y SUPERVISADOS</h3>
+<ul class="bul">
+<li>Empieza con 3-5 integrantes para la mayoría de los flujos de trabajo. El costo en tokens crece de forma lineal con el tamaño del equipo, mientras la sobrecarga de coordinación aumenta y los beneficios disminuyen, así que tres integrantes enfocados suelen rendir más que cinco dispersos. Escala solo cuando al trabajo le sirva que los integrantes trabajen al mismo tiempo. <a class="src" href="https://code.claude.com/docs/en/agent-teams">[agent-teams]</a></li>
+<li>Los equipos funcionan mejor si empiezas con tareas de investigación y revisión que tengan límites claros y no requieran escribir código, como revisar un PR, investigar una biblioteca o investigar un bug. Supervisa y corrige el rumbo en vez de dejar al equipo sin atención, porque un equipo sin supervisión aumenta el riesgo de esfuerzo desperdiciado. Si el líder empieza a implementar en vez de esperar, dile que espere a que los integrantes terminen. <a class="src" href="https://code.claude.com/docs/en/agent-teams">[agent-teams]</a></li>
+<li>Cierra a los integrantes cuando terminen su trabajo; cada integrante activo sigue consumiendo tokens hasta que sale o termina la sesión. Pídele al líder que cierre a uno por su nombre. El integrante puede aprobar o rechazar con una explicación, y primero termina su solicitud o llamada a herramienta en curso, así que el cierre puede tardar. La configuración del equipo se elimina cuando termina la sesión, pero el directorio de la lista de tareas queda en disco. <a class="src" href="https://code.claude.com/docs/en/costs">[costs]</a>, <a class="src" href="https://code.claude.com/docs/en/agent-teams">[agent-teams]</a></li>
+<li>Los equipos de agentes son experimentales y vienen desactivados por defecto (<code>CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1</code> los activa). Una vez activados, un subagente que Claude nombra se lanza como integrante, así que puede formarse un equipo aunque no hayas pedido uno. Si pones la variable en <code>0</code>, los subagentes nombrados vuelven a lanzarse como subagentes normales. Una fuente de configuración de mayor precedencia o la configuración administrada aún puede activarlos. <a class="src" href="https://code.claude.com/docs/en/agent-teams">[agent-teams]</a></li>
+</ul>
+      </div>
+      <div class="rv">
+      <h3>ELIGE UN MODELO MÁS CHICO PARA EL TRABAJO DELEGADO</h3>
+      <p>La guía de costos de Anthropic dice que uses Sonnet para los integrantes y que especifiques <code>model: haiku</code> para las tareas simples de subagentes. Los subagentes que heredan el modelo de tu sesión lo siguen, así que cambiar la sesión principal a Opus también se aplica a todos los subagentes que heredan. Puedes indicar el modelo en el prompt de lanzamiento (por ejemplo, "Usa Sonnet para cada integrante"). <a class="src" href="https://code.claude.com/docs/en/costs">[costs]</a>, <a class="src" href="https://code.claude.com/docs/en/agent-teams">[agent-teams]</a></p>
+      </div>
+      <div class="rv">
+      <h3>CUÁNDO NO USAR AGENTES NI EQUIPOS</h3>
+      <p>Para tareas secuenciales, ediciones en el mismo archivo y trabajo con muchas dependencias, una sola sesión o subagentes son más efectivos. Las idas y vueltas frecuentes, el refinamiento iterativo, las fases que comparten mucho contexto, los cambios puntuales y el trabajo sensible a la latencia pertenecen a la conversación principal. <a class="src" href="https://code.claude.com/docs/en/agent-teams">[agent-teams]</a>, <a class="src" href="https://code.claude.com/docs/en/sub-agents">[sub-agents]</a> La publicación de investigación de Anthropic también señala que los dominios donde todos los agentes deben compartir el mismo contexto, o con muchas dependencias entre agentes, hoy encajan mal con los sistemas multiagente, y que la mayoría de las tareas de programación tienen menos tareas realmente paralelizables que la investigación. <a class="src" href="https://www.anthropic.com/engineering/multi-agent-research-system">[Anthropic engineering]</a></p>
+      </div>
+      <div class="rv">
+      <h3>LISTA DE VERIFICACIÓN PREVIA (CONSEJO)</h3>
+      <ol class="check">
+        <li><b>¿El entregable cabe en una oración?</b> Si necesitas "y además...", probablemente son dos trabajos.</li>
+        <li><b>¿Dijiste qué leer y cómo debe verse la salida?</b></li>
+        <li><b>¿Hay una meta que el agente pueda verificar?</b></li>
+        <li><b>¿De verdad necesitas un agente?</b> Una sola sesión es lo predeterminado para el trabajo rutinario.</li>
+      </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- 0x04 -->
+  <section class="chapter" id="context">
+    <div class="num rv"><div class="hex">0x04</div><span class="lab">HIGIENE DE CONTEXTO</span></div>
+    <div>
+      <div class="rv">
+      <h2>Limpia entre tareas, compacta a propósito</h2>
+<pre class="ascii">  +------------+----------------------------+------------------------------------------+
+  | <span class="h">COMANDO</span>    | <span class="h">QUÉ HACE</span>                   | <span class="h">COSTO</span>                                    |
+  +------------+----------------------------+------------------------------------------+
+  | <span class="k">/clear</span>     | contexto nuevo para una    | no cuesta nada por sí mismo <a class="src" href="https://code.claude.com/docs/en/costs">[costs]</a>      |
+  |            | tarea sin relación         |                                          |
+  +------------+----------------------------+------------------------------------------+
+  | <span class="k">/compact</span>   | resume el historial        | envía una solicitud de resumen aparte    |
+  |            |                            | que incluye el historial que se va a     |
+  |            |                            | resumir <a class="src" href="https://code.claude.com/docs/en/prompt-caching">[prompt-caching]</a>                 |
+  +------------+----------------------------+------------------------------------------+
+  | <span class="k">/rewind</span>    | trunca hasta un turno      | vuelve a un prefijo que ya está en       |
+  |            | anterior                   | caché, en vez de construir uno nuevo     |
+  |            |                            | <a class="src" href="https://code.claude.com/docs/en/prompt-caching">[prompt-caching]</a>                         |
+  +------------+----------------------------+------------------------------------------+</pre>
+      </div>
+      <div class="rv">
+<ul class="bul">
+<li>Limpia entre tareas sin relación: el contexto viejo cuesta tokens en cada mensaje posterior. Ejecuta <code>/rename</code> primero para poder encontrar la sesión y retomarla después con <code>/resume</code>. <a class="src" href="https://code.claude.com/docs/en/costs">[costs]</a></li>
+<li>Compactar tiene un precio: mientras la caché está caliente, la solicitud lee sobre todo el prefijo en caché (barato). Tras una pausa más larga que el TTL, reprocesa todo el historial sin caché, así que compactar una sesión vieja que se retomó es el caso más caro. El turno posterior a la compactación reconstruye la caché solo para el historial, que ahora es mucho más corto. <a class="src" href="https://code.claude.com/docs/en/prompt-caching">[prompt-caching]</a></li>
+<li>Compacta en los cortes naturales (entre tareas) en vez de dejar que la autocompactación se dispare a mitad de tarea. Si seguiste un camino que quieres abandonar por completo, usa <code>/rewind</code> para volver a un turno anterior. <a class="src" href="https://code.claude.com/docs/en/prompt-caching">[prompt-caching]</a></li>
+<li>Controla qué sobrevive: ejecuta <code>/compact</code> con instrucciones (p. ej. <code>/compact focus on the auth bug fix</code>), o agrega una sección "Compact instructions" al CLAUDE.md del proyecto. <a class="src" href="https://code.claude.com/docs/en/context-window.md">[context-window]</a>, <a class="src" href="https://code.claude.com/docs/en/costs">[costs]</a></li>
+<li>Ten claro qué se reinyecta: tras la compactación, el CLAUDE.md de la raíz del proyecto, las reglas sin alcance y la memoria automática se reinyectan desde el disco. Las reglas con frontmatter <code>paths:</code> y los CLAUDE.md anidados se resumen junto con la conversación y solo se recargan bajo demanda. Pon las reglas que deben sobrevivir en el CLAUDE.md de la raíz (o quita el frontmatter <code>paths:</code>). <a class="src" href="https://code.claude.com/docs/en/context-window.md">[context-window]</a></li>
+</ul>
+      </div>
+      <div class="rv">
+      <h3>NO ROMPAS LA CACHÉ A MITAD DE TAREA</h3>
+      <p>Evita los cambios a mitad de tarea que invalidan la caché: cambiar de modelo (cada modelo tiene su propia caché), activar o desactivar el modo rápido, conectar o quitar a propósito un servidor MCP (cuando tool search no difiere sus herramientas), denegar una herramienta completa cuando tool search está desactivado, acumular muchas imágenes y actualizar la herramienta. Con tool search activo (el valor por defecto en los modelos compatibles), los casos de MCP y de reglas de denegación no alteran la caché. Elige modelo y esfuerzo al inicio de la sesión. Editar CLAUDE.md a mitad de sesión no invalida la caché, pero tampoco se aplica hasta <code>/clear</code>, <code>/compact</code> o un reinicio. <a class="src" href="https://code.claude.com/docs/en/prompt-caching">[prompt-caching]</a></p>
+      </div>
+      <div class="rv">
+      <h3>MANTÉN EL CONTEXTO PEQUEÑO DESDE EL ORIGEN</h3>
+<ul class="bul">
+<li>Delega las operaciones verbosas (pruebas, descarga de documentación, procesamiento de logs) a subagentes para que solo regrese un resumen.</li>
+<li>Usa hooks para preprocesar la salida ruidosa (p. ej. recorta la salida de las pruebas a las últimas 100 líneas).</li>
+<li>Prefiere las herramientas CLI (<code>gh</code>, <code>aws</code>, <code>gcloud</code>) sobre los servidores MCP cuando existan.</li>
+<li>Desactiva los servidores MCP que no uses desde <code>/mcp</code>.</li>
+<li>Procura mantener CLAUDE.md por debajo de 200 líneas y mueve las instrucciones propias de un flujo de trabajo a skills bajo demanda.</li>
+</ul>
+      <p class="note">Los cinco: <a class="src" href="https://code.claude.com/docs/en/costs">[costs]</a>. La cifra de 200 líneas es la recomendación "aim to" de la documentación.</p>
+      </div>
+      <div class="rv">
+      <h3>INSPECCIONA ANTES DE ADIVINAR</h3>
+<ul class="bul">
+<li><code>/context</code> muestra un desglose en vivo del contexto por categoría, con sugerencias de optimización, incluidos los archivos CLAUDE.md y de memoria automática que se cargaron. <a class="src" href="https://code.claude.com/docs/en/context-window.md">[context-window]</a></li>
+<li><code>/usage</code> muestra los totales de tokens de la sesión. En los planes Pro, Max, Ultra, Team y Enterprise también atribuye el uso reciente a skills, subagentes, plugins y servidores MCP, con recomendaciones. Tras la primera respuesta agrega una línea "Prompt cache (main)" con la proporción de aciertos de caché, los fallos y si la caché está caliente o fría (v2.1.251+); puede nombrar la causa probable del último fallo (v2.1.260+). <a class="src" href="https://code.claude.com/docs/en/costs">[costs]</a></li>
+</ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 0x05 -->
+  <section class="chapter" id="output">
+    <div class="num rv"><div class="hex">0x05</div><span class="lab">SALIDA</span></div>
+    <div>
+      <div class="rv">
+      <h2>Pide la forma que quieres</h2>
+      <p>Sé específico sobre la salida que quieres: indica el formato y las restricciones de forma explícita. Si quieres más que la tarea básica, pídelo explícitamente en vez de confiar en que el modelo lo infiera de un prompt vago. <a class="src" href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices">[prompting best practices]</a></p>
+      </div>
+      <div class="rv">
+      <h3>FORMATO</h3>
+<ul class="bul">
+<li>Di lo que quieres, no lo que no quieres: usa "Your response should be composed of smoothly flowing prose paragraphs" en lugar de "Do not use markdown in your response". <a class="src" href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices">[prompting best practices]</a></li>
+<li>El estilo de tu prompt puede influir en el estilo de la respuesta: si el formato sigue sin responder, intenta que el estilo del prompt se parezca al de la salida que quieres; quitar el markdown de tu prompt puede reducir la cantidad de markdown en la salida. <a class="src" href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices">[prompting best practices]</a></li>
+<li>Usa etiquetas XML para separar instrucciones, contexto y entrada: ayudan a Claude a interpretar sin ambigüedad los prompts complejos, sobre todo cuando un prompt mezcla instrucciones, contexto, ejemplos y entradas variables. Envuelve cada tipo en su propia etiqueta (por ejemplo <code>&lt;instructions&gt;</code>, <code>&lt;context&gt;</code>, <code>&lt;input&gt;</code>). <a class="src" href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices">[prompting best practices]</a></li>
+<li>Evita los preámbulos con una instrucción directa: <code>Respond directly without preamble. Do not start with phrases like "Here is...", "Based on...", etc.</code> La documentación enumera alternativas (salida dentro de etiquetas XML, salidas estructuradas o llamadas a herramientas) y dice que se elimine el preámbulo ocasional en el posprocesamiento. <a class="src" href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices">[prompting best practices]</a></li>
+</ul>
+      </div>
+      <div class="rv">
+      <h3>LONGITUD (LAS MUESTRAS DE LA DOCUMENTACIÓN SON PARA CLAUDE OPUS 5)</h3>
+<ul class="bul">
+<li>Pide la longitud; no bajes el esfuerzo para conseguirla: el esfuerzo controla cuánto piensa el modelo, no cuánto dice. Bajar el esfuerzo puede reducir el pensamiento sin acortar de forma fiable la respuesta visible. Muestra oficial: <em>"Keep responses focused, brief, and concise. Keep disclaimers and caveats short, and spend most of the response on the main answer. When asked to explain something, give a high-level summary unless an in-depth explanation is specifically requested."</em> En un prompt de sistema largo, acompáñala con un recordatorio corto cerca del final. <a class="src" href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-opus-5">[Opus 5 guide]</a></li>
+<li>Calibra por separado los entregables escritos: los archivos que se escriben en disco suelen salir más largos que con modelos anteriores. Muestra: <em>"Match the length of written documents to what the task needs: cover the substance, but do not pad with filler sections, redundant summaries, or boilerplate."</em> <a class="src" href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-opus-5">[Opus 5 guide]</a></li>
+<li>Da forma al reporte de fin de tarea: muestra: <em>"When you finish, lead with the outcome: your first sentence should answer 'what happened' or 'what did you find,' with supporting detail after it for readers who want it."</em> Los ejemplos positivos del estilo de comunicación que quieres tienden a ser más efectivos que las instrucciones sobre lo que no hay que hacer. <a class="src" href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-opus-5">[Opus 5 guide]</a></li>
+</ul>
+      </div>
+      <div class="rv">
+      <h3>PREGUNTAS Y DECISIONES</h3>
+<ul class="bul">
+<li>Limita las preguntas aclaratorias diciendo cuándo se permite una: muestra de control de alcance para Opus 5: <em>"Deliver what was asked, at the scope intended. Make routine judgment calls yourself, and check in only when different readings of the request would lead to materially different work. If the request seems mistaken or a better approach exists, say so in a sentence and continue with the task as asked rather than quietly narrowing, widening, or transforming it."</em> <a class="src" href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-opus-5">[Opus 5 guide]</a></li>
+<li>Invita a las preguntas a propósito: si no has definido bien lo que quieres, pídele a Claude que te entreviste hasta poder escribir la especificación, y que la guarde en un archivo. Claude vuelve con preguntas de opción múltiple sobre las partes que no has definido. Luego construye a partir de la especificación en una sesión nueva, para que la construcción empiece con contexto limpio y una definición de terminado por escrito. <a class="src" href="https://code.claude.com/docs/en/best-practices">[best-practices]</a></li>
+<li>Recomendaciones sin ediciones: los modelos más recientes de Claude siguen las instrucciones con precisión, así que "¿puedes sugerir algunos cambios?" puede recibir sugerencias en lugar de ediciones. Para un modo conservador, la documentación muestra un fragmento de prompt de sistema que dice que no se cambien archivos salvo instrucción clara, y que cuando la intención es ambigua el modelo debe optar por informar, investigar y recomendar en lugar de actuar. Pide la acción de forma explícita cuando quieras ediciones. <a class="src" href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices">[prompting best practices]</a></li>
+<li>Ten cuidado al limitar la salida de las revisiones: la guía de Opus 5 dice que si un prompt de revisión pide "only report high-severity issues" o "be conservative", el modelo podría seguirlo al pie de la letra y reportar menos. Pídele que reporte todo y filtra en una pasada aparte. <a class="src" href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-opus-5">[Opus 5 guide]</a></li>
+</ul>
+      </div>
+      <div class="rv">
+      <h3>SALIDA LEGIBLE POR MÁQUINAS (API)</h3>
+<ul class="bul">
+<li>Las salidas estructuradas restringen la respuesta a un esquema JSON mediante <code>output_config.format</code> con el tipo <code>json_schema</code> (decodificación restringida). La documentación indica "Always valid: No JSON parsing errors" y "Type safe: Guaranteed field types and required fields". Salvedades: los rechazos (<code>stop_reason</code> "refusal") y los cortes por <code>max_tokens</code> pueden producir una salida que no coincide con el esquema, y los valores de enum pueden variar en mayúsculas, así que compáralos sin distinguir mayúsculas de minúsculas. Para clasificación, usa un campo enum con tus etiquetas válidas (mediante herramientas o salidas estructuradas). <a class="src" href="https://platform.claude.com/docs/en/build-with-claude/structured-outputs">[structured outputs]</a></li>
+<li>No se admiten: esquemas recursivos, restricciones numéricas (minimum/maximum), restricciones de longitud de cadena y <code>additionalProperties</code> distinto de false (todos los objetos deben fijarlo en false). La primera solicitud con un esquema nuevo tiene latencia extra mientras se compila la gramática; las gramáticas compiladas se guardan en caché durante 24 horas desde el último uso. <a class="src" href="https://platform.claude.com/docs/en/build-with-claude/structured-outputs">[structured outputs]</a></li>
+<li>Si no puedes usar salidas estructuradas, prueba primero solo con el prompt: los modelos nuevos pueden ajustarse de forma fiable a esquemas complejos si se les pide, sobre todo si se implementa con reintentos. Rellenar de antemano el turno del asistente (prefill) ya no se admite en Claude 4.6 y modelos posteriores (las solicitudes devuelven un error 400), así que forzar el formato con prefill requiere otro enfoque. <a class="src" href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices">[prompting best practices]</a></li>
+</ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 0x06 -->
+  <section class="chapter" id="pocket">
+    <div class="num rv"><div class="hex">0x06</div><span class="lab">PROMPTS DE BOLSILLO</span></div>
+    <div>
+      <div class="rv">
+      <h2>Copia, completa, envía</h2>
+      <p>Reemplaza lo que está entre <span style="color:var(--yel);font-family:var(--mono)">&lt;corchetes angulares&gt;</span>. Nada más cambia.</p>
+      <div class="copy"><div class="ttl">0x06.1 :: TAREA ACOTADA (Consejo: la forma QUÉ / LÍMITE / LISTO de 0x01)</div><button>copiar</button><pre>Objetivo: <span class="ph">&lt;una frase, con el archivo o el área y el síntoma&gt;</span>
+Solo toca: <span class="ph">&lt;archivo o carpeta&gt;</span>
+Listo cuando: <span class="ph">&lt;una verificación que dé pasa o falla: test / build / linter&gt;</span>
+Muéstrame: el comando que ejecutaste y su salida.</pre></div>
+      <p class="note">Por qué: nombra el área y el síntoma, di cómo se ve lo arreglado y pide evidencia. <a class="src" href="https://code.claude.com/docs/en/best-practices">[best-practices]</a></p>
+      <div class="copy"><div class="ttl">0x06.2 :: CICLO DE VERIFICACIÓN</div><button>copiar</button><pre>Después del cambio, ejecuta <span class="ph">&lt;los tests de autenticación&gt;</span> y sigue hasta que pasen.</pre></div>
+      <p class="note">Sirve para cualquier tarea, sin preparación. <a class="src" href="https://code.claude.com/docs/en/best-practices">[best-practices]</a></p>
+      <div class="copy"><div class="ttl">0x06.3 :: AUTOVERIFICACIÓN (agrégala al final de cualquier prompt)</div><button>copiar</button><pre>Antes de terminar, verifica tu respuesta contra <span class="ph">&lt;criterios de prueba&gt;</span>.</pre></div>
+      <p class="note">La documentación dice que esto detecta errores de forma confiable, sobre todo en código y matemáticas. Salvedad: Claude Opus 5 verifica bien su propio trabajo sin que se lo pidan, y las instrucciones de verificación heredadas pueden causar sobreverificación en ese modelo (más tokens y más latencia); la documentación dice que se quiten en ese modelo. <a class="src" href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices">[prompting best practices]</a></p>
+      </div>
+      <div class="rv">
+      <div class="copy"><div class="ttl">0x06.4 :: PLANEAR ANTES DE ACTUAR</div><button>copiar</button><pre>Objetivo: <span class="ph">&lt;una frase&gt;</span>
+Lee los archivos relevantes y propón un plan. No edites nada hasta que yo lo apruebe.</pre></div>
+      <p class="note">O empieza en modo plan: <code>claude --permission-mode plan</code>. <a class="src" href="https://code.claude.com/docs/en/common-workflows">[common-workflows]</a></p>
+      <div class="copy"><div class="ttl">0x06.5 :: SIN SOBREINGENIERÍA (antepónla a cualquier prompt)</div><button>copiar</button><pre>Haz solo los cambios que se piden directamente. No agregues funciones, refactors ni
+"mejoras" más allá de lo pedido. No agregues docstrings, comentarios ni anotaciones
+de tipo al código que no cambiaste. No agregues manejo de errores, alternativas de
+respaldo ni validación para escenarios que no pueden ocurrir. No crees helpers ni
+abstracciones para operaciones de una sola vez. No agregues configurabilidad extra.</pre></div>
+      <p class="note">Adaptado del prompt de ejemplo de la documentación. La documentación señala que Claude Opus 4.5 y 4.6 tienden a sobrediseñar, así que sirve más si ves ese comportamiento. <a class="src" href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices">[prompting best practices]</a></p>
+      <div class="copy"><div class="ttl">0x06.6 :: SÉ AMBICIOSO (la dirección contraria)</div><button>copiar</button><pre>Sé ambicioso: <span class="ph">&lt;estados vacíos y de error, el flujo de guardado conectado, navegación con teclado&gt;</span>.</pre></div>
+      <p class="note">El agente tiende a construir lo mínimo que satisface una petición, así que pide más de forma explícita. <a class="src" href="https://code.claude.com/docs/en/best-practices">[best-practices]</a></p>
+      </div>
+      <div class="rv">
+      <div class="copy"><div class="ttl">0x06.7 :: ENTREVISTA, LUEGO ESPECIFICACIÓN</div><button>copiar</button><pre>Entrévistame hasta que puedas escribir la especificación, y luego escríbela en SPEC.md.</pre></div>
+      <p class="note">Después construye a partir de SPEC.md en una sesión nueva. <a class="src" href="https://code.claude.com/docs/en/best-practices">[best-practices]</a></p>
+      <div class="copy"><div class="ttl">0x06.8 :: PROMPT PARA LANZAR UN SUBAGENTE (Consejo: forma tomada de la guía de delegación de la documentación en 0x03)</div><button>copiar</button><pre>Objetivo: <span class="ph">&lt;un entregable, p. ej. revisar &lt;ruta&gt; por &lt;aspecto&gt;&gt;</span>
+Alcance: solo <span class="ph">&lt;archivos&gt;</span>; no edites <span class="ph">&lt;archivos&gt;</span>.
+Herramientas/fuentes: <span class="ph">&lt;qué usar o leer&gt;</span>.
+Salida: <span class="ph">&lt;formato&gt;</span>, solo un resumen conciso.
+Modelo: <span class="ph">&lt;Sonnet&gt;</span>.</pre></div>
+      <p class="note">Por qué: objetivo, formato de salida, guía de herramientas y límites. <a class="src" href="https://www.anthropic.com/engineering/multi-agent-research-system">[Anthropic engineering]</a></p>
+      <div class="copy"><div class="ttl">0x06.9 :: EJECUCIÓN SIN SUPERVISIÓN</div><button>copiar</button><pre>El éxito se ve así: <span class="ph">&lt;qué debe ser verdad&gt;</span>.
+Al terminar, <span class="ph">&lt;escribe los resultados en ... / publica ...&gt;</span>. No puedes hacerme preguntas.</pre></div>
+      <p class="note">Las ejecuciones sin supervisión o programadas no pueden hacer preguntas aclaratorias, así que indica qué es el éxito y qué hacer con los resultados. <a class="src" href="https://code.claude.com/docs/en/common-workflows">[common-workflows]</a></p>
+      </div>
+      <div class="rv">
+      <div class="copy"><div class="ttl">0x06.10 :: ABRE CON EL RESULTADO</div><button>copiar</button><pre>Al terminar, abre con el resultado: tu primera frase debe responder
+"qué pasó" o "qué encontraste", con el detalle de apoyo después.</pre></div>
+      <p class="note">Ejemplo oficial de Opus 5. <a class="src" href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-opus-5">[Opus 5 guide]</a></p>
+      </div>
+      <div class="rv">
+      <h3>CUANDO TE ATASCAS</h3>
+      <p>Después de dos correcciones fallidas sobre el mismo problema, ejecuta <code>/clear</code> y escribe un solo prompt nuevo que incorpore lo que aprendiste, en lugar de una tercera corrección. La documentación dice que esto funciona mejor casi siempre; una tercera corrección casi solo se suma a una conversación que ya contiene dos intentos fallidos que el agente sigue releyendo. <a class="src" href="https://code.claude.com/docs/en/best-practices">[best-practices]</a></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 0x07 -->
+  <section class="chapter" id="settings">
+    <div class="num rv"><div class="hex">0x07</div><span class="lab">AJUSTES</span></div>
+    <div>
+      <div class="rv">
+      <h2>Protecciones que configuras una sola vez</h2>
+      <p>Verificado contra la documentación de Anthropic, 2026-11-14. Se indican los requisitos de versión; los nombres y los valores por defecto pueden cambiar.</p>
+      <h3>VENTANA DE AUTOCOMPACTACIÓN</h3>
+<ul class="bul">
+<li>Se configura por modelo con <code>/autocompact</code> (p. ej. <code>/autocompact 500k</code>, que se guarda en <code>modelSettings</code>; <code>/autocompact auto</code> restaura el valor por defecto optimizado; guardar por modelo requiere v2.1.288+).</li>
+<li>Para todos los modelos, usa el ajuste <code>autoCompactWindow</code> (p. ej. <code>200000</code> en <code>~/.claude/settings.json</code>), <code>--autocompact</code> para una sola ejecución o la variable de entorno <code>CLAUDE_CODE_AUTO_COMPACT_WINDOW</code>, que tiene prioridad a menos que Claude Code ignore el valor.</li>
+<li>El comando y la opción aceptan de 100K a 1M tokens, y la ventana tiene como tope la ventana de contexto del modelo.</li>
+<li>Precaución: un valor sin sufijo en la variable de entorno es un conteo bruto de tokens (<code>200</code> significa 200 tokens), mientras que <code>/autocompact 200</code> significa 200,000. Los valores de entorno fuera de rango generan una advertencia y se ajustan al límite del rango; un sufijo k/M en la variable de entorno requiere v2.1.304+.</li>
+</ul>
+      <p class="note">Fuente: <a class="src" href="https://code.claude.com/docs/en/model-config.md">[model-config]</a></p>
+      <p>En los modelos con una ventana de contexto nativa de 1M (modelos Fable, Sonnet 5 y posteriores, Haiku 5.5, Opus 4.7 y posteriores), la autocompactación ocurre por defecto en torno a 967K tokens. <a class="src" href="https://code.claude.com/docs/en/model-config.md">[model-config]</a> <b class="adv">Consejo:</b> como cada solicitud lleva el contexto, una ventana más pequeña reduce el tamaño de cada solicitud. Ese es el razonamiento de esta guía, no una afirmación citada.</p>
+      </div>
+      <div class="rv">
+      <h3>TTL DE LA CACHÉ</h3>
+<ul class="bul">
+<li><code>promptCacheTtl</code> (o <code>CLAUDE_CODE_PROMPT_CACHE_TTL</code>) para la conversación principal y <code>subagentPromptCacheTtl</code> (o <code>CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL</code>) para todo lo demás, cada uno con <code>"5m"</code> o <code>"1h"</code> (v2.1.242+).</li>
+<li>Quienes usan clave de API o un proveedor en la nube pueden fijar <code>promptCacheTtl</code> en <code>"1h"</code> para una caché de una hora en la conversación principal.</li>
+<li><code>FORCE_PROMPT_CACHING_5M=1</code> fuerza 5 minutos en ambos grupos y sirve para depurar o para anular los ajustes administrados.</li>
+<li><code>ENABLE_PROMPT_CACHING_1H=1</code> pide 1 hora para ambos grupos.</li>
+</ul>
+      <p class="note">Fuente: <a class="src" href="https://code.claude.com/docs/en/prompt-caching">[prompt-caching]</a></p>
+      </div>
+      <div class="rv">
+      <h3>REDUCE EL USO EN REPOSO Y EN SEGUNDO PLANO</h3>
+<ul class="bul">
+<li><code>idleCompaction: false</code> deja de compactar una conversación que dejaste inactiva (v2.1.290+).</li>
+<li><code>crossSessionInbound: "hold"</code> retiene los mensajes entrantes de otras sesiones en lugar de entregarlos.</li>
+<li><code>CLAUDE_CODE_GOAL_CHECKIN_MINUTES=0</code> desactiva los chequeos de objetivo en inactividad.</li>
+<li>Las sugerencias de prompt se pueden desactivar.</li>
+</ul>
+      <p class="note">Fuente: <a class="src" href="https://code.claude.com/docs/en/costs">[costs]</a></p>
+      </div>
+      <div class="rv">
+      <h3>MODELO DEL SUBAGENTE</h3>
+      <p><code>CLAUDE_CODE_SUBAGENT_MODEL</code> define un modelo por defecto para los subagentes, pero ocupa el tercer lugar en precedencia: gana el parámetro <code>model</code> de cada invocación, luego el campo <code>model</code> de la definición del subagente, luego esta variable y luego el modelo de la conversación principal. Para aplicar un mismo modelo a todos los subagentes, teammates y agentes de workflow, defínela junto con <code>CLAUDE_CODE_SUBAGENT_MODEL_FORCE=1</code> (v2.1.257+); con FORCE, ya no se aplican los modelos del prompt de creación ni de la definición. Definir solo la variable no cambia los subagentes integrados Explore y Plan. En los teammates, un modelo indicado en el prompt de creación tiene prioridad sobre la variable, salvo que FORCE esté definido. <a class="src" href="https://code.claude.com/docs/en/sub-agents">[sub-agents]</a>, <a class="src" href="https://code.claude.com/docs/en/agent-teams">[agent-teams]</a></p>
+      <h3>ESFUERZO DE RAZONAMIENTO</h3>
+      <p>Reduce el costo del razonamiento en tareas simples con <code>/effort</code> (o en <code>/model</code>), porque los tokens de razonamiento se facturan como tokens de salida. No puedes desactivar el razonamiento en Opus 5.5, Sonnet 5.5, Haiku 5.5 ni en los modelos Fable. Cambiar el esfuerzo a mitad de sesión conserva la caché en Fable 5.1 y posteriores, Opus 5.5, Sonnet 5.5 y Haiku 5.5 con clave de API o suscripción de Claude; en la mayoría de los demás modelos (y en Bedrock, Google Cloud's Agent Platform o un Claude apps gateway) la invalida. <a class="src" href="https://code.claude.com/docs/en/costs">[costs]</a>, <a class="src" href="https://code.claude.com/docs/en/prompt-caching">[prompt-caching]</a></p>
+      <h3>INSPECCIONAR</h3>
+      <p><code>/usage</code> y <code>/context</code>: ver 0x04. En <code>/usage</code>, presiona <code>d</code> o <code>w</code> para alternar entre las últimas 24 horas y los últimos 7 días. <a class="src" href="https://code.claude.com/docs/en/costs">[costs]</a>, <a class="src" href="https://code.claude.com/docs/en/context-window.md">[context-window]</a></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 0x08 -->
+  <section class="chapter" id="field">
+    <div class="num rv"><div class="hex">0x08</div><span class="lab">NOTAS DE CAMPO</span></div>
+    <div>
+      <div class="rv">
+      <h2>Una semana medida</h2>
+      <p class="note" style="margin-top:0;margin-bottom:24px">Esta sección es un caso de estudio: la semana de un desarrollador, medida a partir de los registros locales de sesión de Claude Code (<code>~/.claude/projects/*.jsonl</code>) y de <code>/usage</code>, y luego anonimizada. Las proporciones describen esa semana; las tuyas serán distintas. Léela junto a las secciones con fuentes de arriba.</p>
+      <h3>QUÉ PASÓ</h3>
+      <p>Un límite semanal del plan llegó al 82% dos días después de reiniciarse. La elección de modelo y el esfuerzo de razonamiento casi no pesaron: los tokens de salida, que incluyen el razonamiento, fueron unos 16M frente a unos 3,700M de lecturas de caché. El tamaño del contexto fue lo que determinó el gasto:</p>
+<ul class="bul">
+<li>Una sesión estuvo abierta 9 días sin <code>/clear</code>.</li>
+<li>Su contexto promedió de 290K a 525K tokens por turno, con un pico de 911K. Cada turno, incluso un "ok, sigue", releía todo.</li>
+<li>Los agentes que lanzó (sobre todo integrantes de equipos) sumaron cerca del 64% del uso. Varios corrieron 400+ turnos, y uno corrió 1,209 turnos con el modelo más grande.</li>
+<li>Entre el reinicio y el día tres, la sesión líder inició ~670 turnos a partir de mensajes entrantes. Solo ~200 eran de la persona. 225 fueron notificaciones de inactividad de integrantes, 127 fueron mensajes de integrantes y 121 fueron notificaciones de tareas en segundo plano, cada una un turno con el contexto completo.</li>
+<li><code>/usage</code> de la semana coincidía: el 89% del uso estuvo en sesiones activas durante 8+ horas distintas, el 75% cayó bajo su recomendación de "start fresh when you switch tasks", y un recordatorio programado costó 520K tokens en una sola ejecución porque se disparó dentro de una sesión enorme.</li>
+</ul>
+      </div>
+      <div class="rv">
+      <h3>REGLAS QUE ADOPTAMOS (CONSEJO)</h3>
+<ul class="bul">
+<li>Haz un traspaso y usa <code>/clear</code> antes de que una sesión pase de ~300 a 500K tokens, o en cuanto cambie el tema.</li>
+<li>Un agente por entregable: "arregla los 13 hallazgos de la revisión" pasó a ser un agente para el bloqueante, uno para los mayores y los menores resueltos directamente.</li>
+<li>Con menos de ~10 pasos, no uses un agente: hazlo en la sesión principal.</li>
+<li>Dale a cada agente una línea de meta y un presupuesto de turnos (~100 turnos); después debe detenerse y resumir.</li>
+<li>Apaga los equipos de agentes a menos que los agentes necesiten hablar entre sí. Los subagentes devuelven un resultado y terminan.</li>
+<li>Programa los recordatorios desde una sesión nueva y chica.</li>
+</ul>
+      <p>Por qué ~300 a 500K: el costo por turno crece más o menos con el contexto. Si una sesión empieza cerca de 100K y crece de forma lineal hasta el punto de traspaso, el turno promedio queda más o menos a la mitad:</p>
+<pre class="ascii">  +-------------+------------------------+----------------+
+  | <span class="h">TRASPASO EN</span> | <span class="h">CONTEXTO PROM./TURNO</span>   | <span class="h">COSTO RELATIVO</span> |
+  +-------------+------------------------+----------------+
+  | <span class="k">300K</span>        | ~200K                  | 1.0x           |
+  | <span class="k">500K</span>        | ~300K                  | 1.5x           |
+  | <span class="k">sin límite</span>  | 290-525K, 9 días       | 2-2.5x         |
+  +-------------+------------------------+----------------+</pre>
+      </div>
+      <div class="rv">
+      <h3>PROMPT DE TRASPASO (CONSEJO)</h3>
+      <div class="copy"><div class="ttl">TRASPASO :: ANTES DE LIMPIAR</div><button>copiar</button><pre>Antes de limpiar esta sesión, escribe un traspaso en <span class="ph">&lt;HANDOFF.md&gt;</span> (máx. ~150 líneas).
+Hazlo tú, sin agentes. Usa solo lo que ya sabes, más git para confirmar el estado.
+1. Objetivo en 3 líneas.
+2. Tabla de estado: ítem / rama / PR / tests.
+3. Decisiones que no se reabren, una línea cada una con el porqué.
+4. Próximos pasos en orden de prioridad, cada uno con su primera acción concreta.
+5. Trampas conocidas. Marca como "sin verificar" lo que no puedas confirmar.</pre></div>
+      <p>Luego <code>/clear</code> y: "Lee HANDOFF.md y sigamos con el punto #1."</p>
+      </div>
+      <div class="rv">
+      <h3>PROMPT DE PRESUPUESTO DE AGENTES (CONSEJO)</h3>
+      <div class="copy"><div class="ttl">PRESUPUESTO DE AGENTES :: PARA LA SESIÓN</div><button>copiar</button><pre>Para el resto de esta sesión:
+- Lanza un agente solo si el trabajo corre de verdad en paralelo; si no, hazlo tú.
+- Cada agente recibe un entregable, nunca "toda la especificación".
+- Los agentes reportan en ~100 turnos; si no terminaron, que se detengan y resuman.
+- Modelo de tamaño medio, salvo que yo pida expresamente el grande. Máximo 2 a la vez.
+- Avísame cuando esta sesión pase de ~<span class="ph">&lt;400K&gt;</span> de contexto para hacer el traspaso.</pre></div>
+      </div>
+      <div class="rv">
+      <h3>PROMPT DE DIAGNÓSTICO PRIMERO (CONSEJO)</h3>
+      <div class="copy"><div class="ttl">PRIMERO EL DIAGNÓSTICO</div><button>copiar</button><pre>Esto falla con: <span class="ph">&lt;pega el error exacto&gt;</span>
+Encuentra la causa antes de editar nada. Muéstrame la causa y la evidencia,
+y luego espera. No toques el código hasta que yo confirme.</pre></div>
+      </div>
+      <div class="rv">
+      <h3>PEDIR UNA DECISIÓN (CONSEJO)</h3>
+      <div class="copy"><div class="ttl">PREGUNTA ACOTADA</div><button>copiar</button><pre>Máximo 3 opciones, una línea cada una con su contrapartida. Recomienda una.
+Hazme como máximo una pregunta. Si es de rutina, decide y avísame en una línea.</pre></div>
+      </div>
+      <div class="rv">
+      <h3>TRAMPA DE AJUSTES QUE NOS TOCÓ</h3>
+      <p><code>autoCompactWindow</code> estaba definido de forma global, pero las sesiones igual se compactaban a los 800K. Las entradas por modelo bajo <code>modelSettings</code> tenían su propio <code>autoCompactWindow</code>, y la descripción del esquema de esa configuración dice que un valor por modelo reemplaza al de nivel superior para ese modelo. <code>/autocompact</code> escribe entradas por modelo, así que ejecutarlo puede volver a crear la anulación sin avisar. Revisa <code>modelSettings</code> si el valor global parece ignorarse.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+<pre><span class="g">-[ EOF ]-------------------------------------------------------------</span>
+  saludos a quien alguna vez se quedó sin contexto a las 3 a. m.
+  no hay cuchara. solo hay contexto.
+<span class="g">---------------------------------------------------------------------</span>
+  prompt-playbook :: v0x01 :: datos revisados el 2026-11-14</pre>
+</footer>
+
+<script>
+// matrix rain
+(() => {
+  const c = document.getElementById('rain'); if (!c) return;
+  const x = c.getContext('2d');
+  const chars = 'ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉ0123456789<>/{}=+';
+  const fs = 17; let cols, drops;
+  function size(){ const r = c.getBoundingClientRect(); c.width = r.width; c.height = r.height;
+    cols = Math.floor(c.width/fs); drops = Array.from({length:cols}, () => Math.random()*-60); }
+  size(); addEventListener('resize', size);
+  setInterval(() => {
+    x.fillStyle = 'rgba(3,10,5,.09)'; x.fillRect(0,0,c.width,c.height);
+    x.font = fs + 'px monospace';
+    for (let i = 0; i < cols; i++) {
+      x.fillStyle = Math.random() > .975 ? '#f4fff7' : (Math.random() > .5 ? '#39ff7a' : '#1f9e4a');
+      x.fillText(chars[Math.floor(Math.random()*chars.length)], i*fs, drops[i]*fs);
+      if (drops[i]*fs > c.height && Math.random() > .975) drops[i] = 0;
+      drops[i]++;
+    }
+  }, 50);
+})();
+
+// typewriter, cycling words
+(() => {
+  const el = document.getElementById('type');
+  const words = ['tu contexto.', 'tu límite semanal.', 'a tus agentes.', 'tu contexto.'];
+  let w = 0, i = 0, del = false;
+  (function tick(){
+    const word = words[w];
+    el.textContent = word.slice(0, i);
+    if (!del && i < word.length) { i++; return setTimeout(tick, 90); }
+    if (!del && w === words.length - 1) return;
+    if (!del) { del = true; return setTimeout(tick, 1400); }
+    if (del && i > 0) { i--; return setTimeout(tick, 45); }
+    del = false; w++; setTimeout(tick, 250);
+  })();
+})();
+
+// reveal on scroll + meters
+(() => {
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (!e.isIntersecting) return;
+    e.target.classList.add('in');
+    e.target.querySelectorAll('.meter .bar i').forEach(b => b.style.width = b.dataset.w + '%');
+    io.unobserve(e.target);
+  }), {threshold: .12});
+  document.querySelectorAll('.rv').forEach(el => io.observe(el));
+})();
+
+// reading progress
+addEventListener('scroll', () => {
+  const h = document.documentElement;
+  document.getElementById('progress').style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + '%';
+}, {passive: true});
+
+// copy buttons
+document.querySelectorAll('.copy button').forEach(b => b.addEventListener('click', () => {
+  const t = b.parentNode.querySelector('pre').innerText;
+  navigator.clipboard.writeText(t).then(() => {
+    b.textContent = 'copiado'; b.classList.add('ok');
+    setTimeout(() => { b.textContent = 'copiar'; b.classList.remove('ok'); }, 1500);
+  });
+}));
+
+// language toggle: keep the reader on the same section
+document.querySelectorAll('.lang a:not([aria-current])').forEach(a => a.addEventListener('click', e => {
+  let id = '';
+  document.querySelectorAll('section.chapter[id]').forEach(s => { if (s.getBoundingClientRect().top <= innerHeight * .35) id = s.id; });
+  if (id) { e.preventDefault(); location.href = a.getAttribute('href') + '#' + id; }
+}));
+document.querySelectorAll('.lang a[aria-current]').forEach(a => a.addEventListener('click', e => e.preventDefault()));
+</script>
+</body>
+</html>

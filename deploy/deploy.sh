@@ -9,7 +9,7 @@ REMOTE="/home/cativo23/deploy/prompt-playbook"
 SRC="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 ssh "$HOST" "mkdir -p '$REMOTE/html'"
-rsync -az --delete --include 'index.html' --include 'assets/' --include 'assets/og.png' --include 'assets/icon.png' --exclude '*' "$SRC/" "$HOST:$REMOTE/html/"
+rsync -az --delete --include 'index.html' --include 'es/' --include 'es/index.html' --include 'assets/' --include 'assets/og.png' --include 'assets/icon.png' --exclude '*' "$SRC/" "$HOST:$REMOTE/html/"
 scp -q "$SRC/deploy/compose.prod.yml" "$HOST:$REMOTE/compose.prod.yml"
 scp -q "$SRC/deploy/nginx.conf" "$HOST:$REMOTE/nginx.conf"
 ssh "$HOST" "cd '$REMOTE' && docker compose -f compose.prod.yml up -d"
